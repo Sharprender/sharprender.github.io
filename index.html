@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sharprender - Welcome</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Sharprender</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js for 3D simulation -->
+    <!-- Three.js for 3D graphics -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Google Fonts: Outfit for clean, modern, elegant typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Space Grotesk & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #030712;
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #02040a;
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -36,111 +36,138 @@
         .interactive {
             pointer-events: auto;
         }
-        /* Subtle glow animation for the Welcome text */
-        @keyframes subtleGlow {
-            0%, 100% { text-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 0 40px rgba(56, 189, 248, 0.2); }
-            50% { text-shadow: 0 0 30px rgba(56, 189, 248, 0.8), 0 0 60px rgba(56, 189, 248, 0.4); }
+        /* Glowing effects for typography */
+        .welcome-title {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.3em;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.4), 0 0 60px rgba(56, 189, 248, 0.15);
+            transition: text-shadow 0.5s ease;
         }
-        .welcome-glow {
-            animation: subtleGlow 4s ease-in-out infinite;
+        .welcome-title:hover {
+            text-shadow: 0 0 40px rgba(56, 189, 248, 0.8), 0 0 80px rgba(56, 189, 248, 0.4);
+        }
+        /* Subtle scanline background layer */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.15) 50%,
+                rgba(0, 0, 0, 0.15)
+            );
+            background-size: 100% 4px;
         }
     </style>
 </head>
 <body class="h-full flex flex-col justify-between select-none">
 
-    <!-- 3D Canvas Background Container -->
+    <!-- 3D WebGL Background Container -->
     <div id="webgl-container"></div>
+    
+    <!-- Subtle Scanline overlay for futuristic depth -->
+    <div class="absolute inset-0 pointer-events-none scanlines z-2"></div>
 
     <!-- UI Overlay Layer -->
-    <div class="ui-overlay w-full h-full flex flex-col justify-between p-6 sm:p-10">
+    <div class="ui-overlay w-full h-full flex flex-col justify-between p-6 sm:p-12">
         
-        <!-- Top Center: Welcome Header -->
-        <header class="w-full flex justify-center pt-4 sm:pt-8">
-            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-light tracking-[0.2em] text-white uppercase welcome-glow">
+        <!-- Header / Top Center: Simple and elegant "Welcome" -->
+        <header class="w-full flex flex-col items-center justify-center pt-2 sm:pt-6">
+            <span class="text-xs tracking-[0.4em] uppercase text-cyan-400/80 mb-2 font-medium">Sharprender</span>
+            <h1 class="welcome-title text-4xl sm:text-6xl lg:text-7xl font-light text-white uppercase ml-[0.3em] interactive cursor-default">
                 Welcome
             </h1>
+            <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent mt-4"></div>
         </header>
 
-        <!-- Center Spacer (Leaves room for the 3D planet and rocket) -->
+        <!-- Center Spacer for the 3D Planet & Orbiting Rocket -->
         <main class="flex-grow flex items-center justify-center">
-            <!-- Optional subtle center caption or interaction hint can go here if needed -->
+            <!-- Space reserved for centered 3D interactive viewport -->
         </main>
 
-        <!-- Bottom Footer / Brand Identification -->
-        <footer class="w-full flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-400 font-light tracking-wider gap-4 pb-2">
-            <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                <span class="text-slate-300 font-medium">Sharprender Systems</span>
+        <!-- Bottom Footer Info -->
+        <footer class="w-full flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400/80 tracking-widest gap-4 font-light">
+            <div class="flex items-center space-x-3">
+                <div class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                </div>
+                <span class="text-slate-300 font-medium">SHARPRENDER 3D ENGINE</span>
             </div>
-            <div>
-                <p class="text-slate-500">Immersive Orbital Simulation v2.4</p>
+            <div class="text-center sm:text-right text-slate-500">
+                <span>ORBITAL SIMULATION</span>
+                <span class="mx-2 text-slate-700">|</span>
+                <span class="text-cyan-400/90">REAL-TIME SHADERS</span>
             </div>
         </footer>
     </div>
 
-    <!-- JavaScript for Three.js Simulation -->
+    <!-- Main WebGL 3D Logic -->
     <script>
-        // Global variables for Three.js scene
         let scene, camera, renderer;
-        let earth, clouds, atmosphere, starField;
-        let rocketGroup;
-        let starsGeometry;
+        let earthGroup, earthMesh, cloudsMesh, atmosphereMesh;
+        let rocketGroup, thrusterParticles, particleGeo;
+        let starsField, twinklingStars, nebulaMesh;
         
-        // Mouse interaction variables
         let mouseX = 0, mouseY = 0;
         let targetX = 0, targetY = 0;
         const windowHalfX = window.innerWidth / 2;
         const windowHalfY = window.innerHeight / 2;
 
-        // Orbit parameters for the rocket
         let orbitAngle = 0;
-        const orbitRadiusX = 4.2;
-        const orbitRadiusZ = 3.2;
+        const orbitRadiusX = 4.8;
+        const orbitRadiusZ = 3.6;
 
         function init() {
             const container = document.getElementById('webgl-container');
 
-            // 1. Scene setup
+            // 1. Scene Setup
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x030712, 0.015);
+            scene.fog = new THREE.FogExp2(0x02040a, 0.012);
 
-            // 2. Camera setup
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 1.5, 6.5);
-            camera.lookAt(0, 0, 0);
+            // 2. Camera Setup
+            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.8, 7.5);
 
-            // 3. Renderer setup
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            // 3. Renderer Setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.25;
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
 
-            // 4. Lighting
-            const ambientLight = new THREE.AmbientLight(0x223344, 1.2);
+            // 4. Lighting Setup
+            const ambientLight = new THREE.AmbientLight(0x1a2942, 1.5);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xffffff, 2.2);
-            sunLight.position.set(10, 6, 8);
+            // Main Sunlight (Key Light)
+            const sunLight = new THREE.DirectionalLight(0xffffff, 2.8);
+            sunLight.position.set(12, 8, 10);
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = 2048;
             sunLight.shadow.mapSize.height = 2048;
             scene.add(sunLight);
 
-            // Additional rim light for cinematic deep-space look
-            const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.0);
-            rimLight.position.set(-10, -5, -8);
+            // Secondary Rim Light (Cyan highlight)
+            const rimLight = new THREE.DirectionalLight(0x00f0ff, 1.8);
+            rimLight.position.set(-12, -6, -8);
             scene.add(rimLight);
 
-            // 5. Create Starfield Background
-            createStarfield();
+            // Warm Fill Light
+            const fillLight = new THREE.PointLight(0xff7733, 0.8, 20);
+            fillLight.position.set(-8, 5, 5);
+            scene.add(fillLight);
 
-            // 6. Create Planet Earth
-            createEarth();
+            // 5. Build Deep Space Background
+            createSpaceBackground();
 
-            // 7. Create Orbiting Rocket
-            createRocket();
+            // 6. Build High-Detail Earth
+            createDetailedEarth();
+
+            // 7. Build High-Detail Rocket & Particle Engine
+            createDetailedRocket();
 
             // 8. Event Listeners
             window.addEventListener('resize', onWindowResize);
@@ -151,113 +178,189 @@
             animate();
         }
 
-        // Generate procedural starfield with twinkle effect
-        function createStarfield() {
-            const starsCount = 1200;
-            starsGeometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(starsCount * 3);
-            const colors = new Float32Array(starsCount * 3);
+        // --- SPACE BACKGROUND: Stars, Nebulae, Twinkles ---
+        function createSpaceBackground() {
+            // Static starfield
+            const starCount = 2000;
+            const starGeometry = new THREE.BufferGeometry();
+            const starPositions = new Float32Array(starCount * 3);
+            const starColors = new Float32Array(starCount * 3);
 
-            for (let i = 0; i < starsCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 200;
-                positions[i + 1] = (Math.random() - 0.5) * 200;
-                positions[i + 2] = (Math.random() - 0.5) * 200;
+            for (let i = 0; i < starCount * 3; i += 3) {
+                starPositions[i] = (Math.random() - 0.5) * 300;
+                starPositions[i + 1] = (Math.random() - 0.5) * 300;
+                starPositions[i + 2] = (Math.random() - 0.5) * 300;
 
-                // Subtle variations in star color (white, blueish, warm white)
-                const colorChoice = Math.random();
-                if (colorChoice > 0.8) {
-                    colors[i] = 0.6; colors[i+1] = 0.8; colors[i+2] = 1.0; // Blue tint
-                } else if (colorChoice > 0.6) {
-                    colors[i] = 1.0; colors[i+1] = 0.9; colors[i+2] = 0.7; // Warm tint
+                const colorType = Math.random();
+                if (colorType > 0.85) {
+                    starColors[i] = 0.4; starColors[i+1] = 0.8; starColors[i+2] = 1.0; // Cyan/Blue
+                } else if (colorType > 0.7) {
+                    starColors[i] = 1.0; starColors[i+1] = 0.7; starColors[i+2] = 0.5; // Amber
                 } else {
-                    colors[i] = 1.0; colors[i+1] = 1.0; colors[i+2] = 1.0; // Pure white
+                    starColors[i] = 0.9; starColors[i+1] = 0.9; starColors[i+2] = 1.0; // Soft bright white
                 }
             }
 
-            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+            starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
-            const starsMaterial = new THREE.PointsMaterial({
-                size: 0.7,
+            const starMaterial = new THREE.PointsMaterial({
+                size: 0.8,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.85
             });
 
-            starField = new THREE.Points(starsGeometry, starsMaterial);
-            scene.add(starField);
+            starsField = new THREE.Points(starGeometry, starMaterial);
+            scene.add(starsField);
+
+            // Twinkling foreground stars
+            const twinkleCount = 150;
+            const twinkleGeo = new THREE.BufferGeometry();
+            const twinklePos = new Float32Array(twinkleCount * 3);
+
+            for (let i = 0; i < twinkleCount * 3; i += 3) {
+                twinklePos[i] = (Math.random() - 0.5) * 100;
+                twinklePos[i + 1] = (Math.random() - 0.5) * 100;
+                twinklePos[i + 2] = (Math.random() - 0.5) * 100;
+            }
+
+            twinkleGeo.setAttribute('position', new THREE.BufferAttribute(twinklePos, 3));
+            const twinkleMat = new THREE.PointsMaterial({
+                size: 1.6,
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending
+            });
+
+            twinklingStars = new THREE.Points(twinkleGeo, twinkleMat);
+            scene.add(twinklingStars);
+
+            // Deep Space Nebula Glow Mesh
+            const nebulaGeo = new THREE.SphereGeometry(120, 32, 32);
+            const nebulaCanvas = document.createElement('canvas');
+            nebulaCanvas.width = 1024;
+            nebulaCanvas.height = 512;
+            const nCtx = nebulaCanvas.getContext('2d');
+            
+            const gradient = nCtx.createRadialGradient(512, 256, 50, 512, 256, 500);
+            gradient.addColorStop(0, 'rgba(15, 23, 42, 0.8)');
+            gradient.addColorStop(0.3, 'rgba(14, 116, 144, 0.25)');
+            gradient.addColorStop(0.6, 'rgba(88, 28, 135, 0.15)');
+            gradient.addColorStop(1, 'rgba(2, 4, 10, 0)');
+            
+            nCtx.fillStyle = gradient;
+            nCtx.fillRect(0, 0, 1024, 512);
+
+            const nebulaTex = new THREE.CanvasTexture(nebulaCanvas);
+            const nebulaMat = new THREE.MeshBasicMaterial({
+                map: nebulaTex,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.7,
+                blending: THREE.AdditiveBlending
+            });
+            nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMat);
+            scene.add(nebulaMesh);
         }
 
-        // Generate procedural Earth texture dynamically using HTML5 Canvas
-        function generateEarthTexture() {
+        // --- PROCEDURAL TEXTURE GENERATION ---
+        function generateEarthTextures() {
+            const width = 2048;
+            const height = 1024;
+
+            // 1. Color Map
             const canvas = document.createElement('canvas');
-            canvas.width = 2048;
-            canvas.height = 1024;
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext('2d');
 
-            // Deep ocean blue background
-            ctx.fillStyle = '#0f1f38';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Deep Ocean base
+            const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
+            oceanGrad.addColorStop(0, '#0a192f');
+            oceanGrad.addColorStop(0.5, '#0d254c');
+            oceanGrad.addColorStop(1, '#050c1a');
+            ctx.fillStyle = oceanGrad;
+            ctx.fillRect(0, 0, width, height);
 
-            // Draw stylized continents (procedural generative landmasses)
-            ctx.fillStyle = '#1e3a2f';
-            ctx.strokeStyle = '#2d5a45';
-            ctx.lineWidth = 15;
-
-            // Helper to draw continent blobs
-            function drawBlob(x, y, radius, points) {
+            // Draw Continents with rich biome detail
+            function drawLandmass(cx, cy, r, points, colorMain, colorCoast) {
+                ctx.fillStyle = colorCoast;
                 ctx.beginPath();
-                for (let i = 0; i < points; i++) {
+                for (let i = 0; i <= points; i++) {
                     const angle = (i / points) * Math.PI * 2;
-                    const r = radius * (0.8 + Math.sin(i * 3) * 0.2 + Math.cos(i * 5) * 0.1);
-                    const px = x + Math.cos(angle) * r;
-                    const py = y + Math.sin(angle) * r;
-                    if (i === 0) ctx.moveTo(px, py);
-                    else ctx.lineTo(px, py);
+                    const radius = r * (0.8 + Math.sin(i * 2.5) * 0.25 + Math.cos(i * 4) * 0.15);
+                    const x = cx + Math.cos(angle) * (radius + 20);
+                    const y = cy + Math.sin(angle) * (radius + 20);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.closePath();
                 ctx.fill();
-                ctx.stroke();
+
+                ctx.fillStyle = colorMain;
+                ctx.beginPath();
+                for (let i = 0; i <= points; i++) {
+                    const angle = (i / points) * Math.PI * 2;
+                    const radius = r * (0.8 + Math.sin(i * 2.5) * 0.25 + Math.cos(i * 4) * 0.15);
+                    const x = cx + Math.cos(angle) * radius;
+                    const y = cy + Math.sin(angle) * radius;
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
             }
 
-            // Generate continent land masses across the texture map
-            drawBlob(512, 300, 220, 12); // North America / Europe
-            drawBlob(650, 650, 180, 10); // South America / Africa
-            drawBlob(1300, 350, 280, 15); // Asia
-            drawBlob(1500, 750, 150, 10); // Australia / Indonesia
-            drawBlob(1024, 900, 300, 14); // Antarctica
+            // Continents with green/brown biomes and turquoise shallow coasts
+            drawLandmass(500, 320, 240, 16, '#1e3e2b', '#1d5a68'); // North America
+            drawLandmass(680, 680, 200, 14, '#234729', '#1d5a68'); // South America
+            drawLandmass(1150, 360, 260, 18, '#324a29', '#246b6a'); // Europe / Asia
+            drawLandmass(1100, 580, 210, 15, '#4a4427', '#1f5e5b'); // Africa
+            drawLandmass(1550, 700, 160, 12, '#3b4322', '#1a5663'); // Australia
 
-            // Add some polar ice caps
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(0, 0, canvas.width, 60);
-            ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+            // Polar Caps
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(0, 0, width, 55);
+            ctx.fillRect(0, height - 55, width, 55);
 
-            return new THREE.CanvasTexture(canvas);
+            // 2. Bump / Specular Map Canvas
+            const bumpCanvas = document.createElement('canvas');
+            bumpCanvas.width = width;
+            bumpCanvas.height = height;
+            const bCtx = bumpCanvas.getContext('2d');
+            bCtx.fillStyle = '#000000'; // Oceans flat/black
+            bCtx.fillRect(0, 0, width, height);
+            
+            // Draw land specular heightmap
+            bCtx.fillStyle = '#ffffff';
+            bCtx.drawImage(canvas, 0, 0);
+
+            return {
+                diffuse: new THREE.CanvasTexture(canvas),
+                bump: new THREE.CanvasTexture(bumpCanvas)
+            };
         }
 
-        // Generate procedural cloud texture
-        function generateCloudTexture() {
+        function generateCloudMap() {
             const canvas = document.createElement('canvas');
             canvas.width = 2048;
             canvas.height = 1024;
             const ctx = canvas.getContext('2d');
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw soft cloud swirls
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-            for (let i = 0; i < 60; i++) {
+            // Swirling organic clouds
+            for (let i = 0; i < 90; i++) {
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
-                const r = 80 + Math.random() * 180;
-                
-                const gradient = ctx.createRadialGradient(x, y, 10, x, y, r);
-                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
-                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                
-                ctx.fillStyle = gradient;
+                const r = 60 + Math.random() * 200;
+
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                ctx.fillStyle = grad;
                 ctx.beginPath();
                 ctx.arc(x, y, r, 0, Math.PI * 2);
                 ctx.fill();
@@ -266,158 +369,265 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // Create Earth, Atmosphere, and Clouds
-        function createEarth() {
-            const earthRadius = 1.8;
-            const earthGeometry = new THREE.SphereGeometry(earthRadius, 64, 64);
+        // --- HIGH-DETAIL EARTH & ATMOSPHERE SHADER ---
+        function createDetailedEarth() {
+            earthGroup = new THREE.Group();
 
-            const earthMaterial = new THREE.MeshStandardMaterial({
-                map: generateEarthTexture(),
-                roughness: 0.8,
-                metalness: 0.2,
-                bumpScale: 0.05
+            const radius = 2.0;
+            const earthGeo = new THREE.SphereGeometry(radius, 64, 64);
+            const textures = generateEarthTextures();
+
+            // Realistic Surface Material
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: textures.diffuse,
+                bumpMap: textures.bump,
+                bumpScale: 0.04,
+                roughness: 0.65,
+                metalness: 0.1,
             });
 
-            earth = new THREE.Mesh(earthGeometry, earthMaterial);
-            earth.castShadow = true;
-            earth.receiveShadow = true;
-            scene.add(earth);
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthMesh.castShadow = true;
+            earthMesh.receiveShadow = true;
+            earthGroup.add(earthMesh);
 
-            // Clouds layer
-            const cloudsGeometry = new THREE.SphereGeometry(earthRadius + 0.03, 64, 64);
-            const cloudsMaterial = new THREE.MeshStandardMaterial({
-                map: generateCloudTexture(),
+            // Cloud Layer
+            const cloudGeo = new THREE.SphereGeometry(radius + 0.035, 64, 64);
+            const cloudMat = new THREE.MeshStandardMaterial({
+                map: generateCloudMap(),
                 transparent: true,
+                opacity: 0.7,
                 blending: THREE.NormalBlending,
-                opacity: 0.8,
                 depthWrite: false
             });
-            clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-            scene.add(clouds);
+            cloudsMesh = new THREE.Mesh(cloudGeo, cloudMat);
+            earthGroup.add(cloudsMesh);
 
-            // Atmosphere glow mesh
-            const atmosGeometry = new THREE.SphereGeometry(earthRadius + 0.12, 64, 64);
-            const atmosMaterial = new THREE.MeshBasicMaterial({
-                color: 0x38bdf8,
-                transparent: true,
-                opacity: 0.15,
+            // Atmosphere Shader (Custom Fresnel Edge Glow)
+            const atmosphereVertexShader = `
+                varying vec3 vNormal;
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `;
+
+            const atmosphereFragmentShader = `
+                varying vec3 vNormal;
+                void main() {
+                    float intensity = pow(0.62 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
+                    gl_FragColor = vec4(0.22, 0.74, 0.97, 1.0) * intensity;
+                }
+            `;
+
+            const atmosphereGeo = new THREE.SphereGeometry(radius + 0.18, 64, 64);
+            const atmosphereMat = new THREE.ShaderMaterial({
+                vertexShader: atmosphereVertexShader,
+                fragmentShader: atmosphereFragmentShader,
+                blending: THREE.AdditiveBlending,
                 side: THREE.BackSide,
-                blending: THREE.AdditiveBlending
+                transparent: true
             });
-            atmosphere = new THREE.Mesh(atmosGeometry, atmosMaterial);
-            scene.add(atmosphere);
+
+            atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
+            earthGroup.add(atmosphereMesh);
+
+            // Tilt Earth slightly on its real axial tilt (~23.5 deg)
+            earthGroup.rotation.z = 23.5 * (Math.PI / 180);
+            scene.add(earthGroup);
         }
 
-        // Create a detailed 3D Rocket
-        function createRocket() {
+        // --- HIGH-DETAIL 3D ROCKET MODEL & ENGINE PARTICLES ---
+        function createDetailedRocket() {
             rocketGroup = new THREE.Group();
 
-            // Rocket Body (Cylinder)
-            const bodyGeo = new THREE.CylinderGeometry(0.08, 0.1, 0.8, 16);
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.3, metalness: 0.6 });
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            // Materials
+            const hullMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2, metalness: 0.8 }); // Pearl White Body
+            const darkMetalMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.9 }); // Dark metallic trim
+            const accentRedMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.5 }); // Crimson accents
+            const visorMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.9 }); // Glassy visor
+            const engineGlowMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+
+            // 1. Main Fuselage Body
+            const bodyGeo = new THREE.CylinderGeometry(0.12, 0.14, 0.9, 24);
+            const body = new THREE.Mesh(bodyGeo, hullMat);
             body.castShadow = true;
             rocketGroup.add(body);
 
-            // Rocket Nose Cone
-            const coneGeo = new THREE.ConeGeometry(0.08, 0.3, 16);
-            const coneMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.4 }); // Red tip
-            const cone = new THREE.Mesh(coneGeo, coneMat);
-            cone.position.y = 0.55;
+            // 2. Metallic Trim Rings
+            const ringGeo = new THREE.TorusGeometry(0.13, 0.012, 16, 32);
+            const ringTop = new THREE.Mesh(ringGeo, darkMetalMat);
+            ringTop.position.y = 0.25;
+            ringTop.rotation.x = Math.PI / 2;
+            rocketGroup.add(ringTop);
+
+            const ringBottom = new THREE.Mesh(ringGeo, darkMetalMat);
+            ringBottom.position.y = -0.25;
+            ringBottom.rotation.x = Math.PI / 2;
+            rocketGroup.add(ringBottom);
+
+            // 3. Aerodynamic Nose Cone
+            const coneGeo = new THREE.ConeGeometry(0.12, 0.4, 24);
+            const cone = new THREE.Mesh(coneGeo, accentRedMat);
+            cone.position.y = 0.65;
             rocketGroup.add(cone);
 
-            // Rocket Fins (3 fins)
-            const finGeo = new THREE.BoxGeometry(0.02, 0.25, 0.15);
-            const finMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.4 }); // Blue fins
-            for (let i = 0; i < 3; i++) {
-                const fin = new THREE.Mesh(finGeo, finMat);
-                const angle = (i / 3) * Math.PI * 2;
-                fin.position.x = Math.cos(angle) * 0.08;
-                fin.position.z = Math.sin(angle) * 0.08;
-                fin.position.y = -0.3;
-                fin.rotation.y = -angle;
-                fin.rotation.z = (i % 2 === 0 ? 0.2 : -0.2);
+            // 4. Cockpit Visor / Glass Window
+            const visorGeo = new THREE.SphereGeometry(0.065, 16, 16);
+            const visor = new THREE.Mesh(visorGeo, visorMat);
+            visor.position.set(0, 0.28, 0.08);
+            visor.scale.set(1, 1.2, 0.8);
+            rocketGroup.add(visor);
+
+            // 5. Four Aerodynamic Curved Fins
+            const finShape = new THREE.Shape();
+            finShape.moveTo(0, 0);
+            finShape.lineTo(0.18, -0.15);
+            finShape.lineTo(0.18, -0.35);
+            finShape.lineTo(0, -0.25);
+            finShape.closePath();
+
+            const extrudeSettings = { depth: 0.015, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.003, bevelThickness: 0.003 };
+            const finGeo = new THREE.ExtrudeGeometry(finShape, extrudeSettings);
+
+            for (let i = 0; i < 4; i++) {
+                const fin = new THREE.Mesh(finGeo, accentRedMat);
+                const angle = (i / 4) * Math.PI * 2;
+                fin.rotation.y = angle;
+                fin.position.y = -0.2;
                 rocketGroup.add(fin);
             }
 
-            // Thruster Flame
-            const flameGeo = new THREE.ConeGeometry(0.06, 0.3, 12);
-            const flameMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.9 });
-            const flame = new THREE.Mesh(flameGeo, flameMat);
-            flame.position.y = -0.55;
-            flame.rotation.x = Math.PI; // Point downwards
-            rocketGroup.add(flame);
+            // 6. Engine Exhaust Nozzle
+            const nozzleGeo = new THREE.CylinderGeometry(0.09, 0.06, 0.18, 16);
+            const nozzle = new THREE.Mesh(nozzleGeo, darkMetalMat);
+            nozzle.position.y = -0.52;
+            rocketGroup.add(nozzle);
 
-            // Scale down and add to scene
-            rocketGroup.scale.set(1.2, 1.2, 1.2);
+            // 7. Engine Core Inner Glow Cone
+            const engineCoreGeo = new THREE.ConeGeometry(0.05, 0.25, 16);
+            const engineCore = new THREE.Mesh(engineCoreGeo, engineGlowMat);
+            engineCore.position.y = -0.62;
+            engineCore.rotation.x = Math.PI;
+            rocketGroup.add(engineCore);
+
+            // 8. Thruster Exhaust Particle System
+            const particleCount = 65;
+            particleGeo = new THREE.BufferGeometry();
+            const pPositions = new Float32Array(particleCount * 3);
+            const pScales = new Float32Array(particleCount);
+
+            for (let i = 0; i < particleCount; i++) {
+                pPositions[i * 3] = (Math.random() - 0.5) * 0.08;
+                pPositions[i * 3 + 1] = -0.6 - Math.random() * 0.8; // Trail length
+                pPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+                pScales[i] = Math.random();
+            }
+
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+
+            const particleMat = new THREE.PointsMaterial({
+                color: 0x38bdf8,
+                size: 0.08,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            thrusterParticles = new THREE.Points(particleGeo, particleMat);
+            rocketGroup.add(thrusterParticles);
+
+            // Adjust scale
+            rocketGroup.scale.set(0.95, 0.95, 0.95);
             scene.add(rocketGroup);
         }
 
-        // Handle window resizing
+        // --- WINDOW RESIZE HANDLER ---
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Mouse move parallax
+        // --- INTERACTION HANDLERS ---
         function onDocumentMouseMove(event) {
-            mouseX = (event.clientX - windowHalfX) * 0.001;
-            mouseY = (event.clientY - windowHalfY) * 0.001;
+            mouseX = (event.clientX - windowHalfX) * 0.0008;
+            mouseY = (event.clientY - windowHalfY) * 0.0008;
         }
 
-        // Touch move parallax for mobile
         function onTouchMove(event) {
             if (event.touches.length > 0) {
-                mouseX = (event.touches[0].clientX - windowHalfX) * 0.001;
-                mouseY = (event.touches[0].clientY - windowHalfY) * 0.001;
+                mouseX = (event.touches[0].clientX - windowHalfX) * 0.0008;
+                mouseY = (event.touches[0].clientY - windowHalfY) * 0.0008;
             }
         }
 
-        // Main Animation Loop
+        // --- ANIMATION LOOP ---
         function animate() {
             requestAnimationFrame(animate);
 
-            // Smooth damping for camera parallax based on mouse
+            // Smooth Camera Parallax Response to Mouse/Touch
             targetX += (mouseX - targetX) * 0.05;
             targetY += (mouseY - targetY) * 0.05;
 
-            camera.position.x = targetX * 2;
-            camera.position.y = 1.5 + (-targetY * 2);
+            camera.position.x = targetX * 3;
+            camera.position.y = 1.8 + (-targetY * 3);
             camera.lookAt(0, 0, 0);
 
-            // Rotate Earth and Clouds on their axis
-            if (earth) earth.rotation.y += 0.001;
-            if (clouds) clouds.rotation.y += 0.0013; // Clouds rotate slightly faster
+            // Earth Rotation Logic
+            if (earthMesh) earthMesh.rotation.y += 0.0012;
+            if (cloudsMesh) cloudsMesh.rotation.y += 0.0016; // Atmospheric slip
 
-            // Rotate starfield very slowly for ambient motion
-            if (starField) starField.rotation.y += 0.0001;
+            // Starfield Slow Ambient Motion
+            if (starsField) starsField.rotation.y += 0.00015;
+            if (twinklingStars) {
+                twinklingStars.rotation.y -= 0.0002;
+                // Subtle pulse opacity effect
+                twinklingStars.material.opacity = 0.7 + Math.sin(Date.now() * 0.003) * 0.25;
+            }
 
-            // Orbit Rocket around the Earth
+            // Rocket Orbit Animation around Planet
             if (rocketGroup) {
-                orbitAngle += 0.008; // Orbit speed
+                orbitAngle += 0.009; // Speed of orbit
 
-                // Calculate elliptical path coordinates
+                // Tilted 3D orbit trajectory formula
                 const x = Math.cos(orbitAngle) * orbitRadiusX;
                 const z = Math.sin(orbitAngle) * orbitRadiusZ;
-                const y = Math.sin(orbitAngle * 2) * 0.4; // Slight inclination/wave on Y axis
+                const y = Math.sin(orbitAngle * 1.5) * 0.65; // Wave height offset
 
                 rocketGroup.position.set(x, y, z);
 
-                // Make the rocket look ahead along the tangent of its orbit
-                const nextX = Math.cos(orbitAngle + 0.01) * orbitRadiusX;
-                const nextZ = Math.sin(orbitAngle + 0.01) * orbitRadiusZ;
-                const nextY = Math.sin((orbitAngle + 0.01) * 2) * 0.4;
+                // Calculate tangent vector for realistic rocket orientation along orbit path
+                const tangentX = -Math.sin(orbitAngle) * orbitRadiusX;
+                const tangentZ = Math.cos(orbitAngle) * orbitRadiusZ;
+                const tangentY = Math.cos(orbitAngle * 1.5) * 0.65 * 1.5;
 
-                rocketGroup.lookAt(nextX, nextY, nextZ);
-                // Adjust rotation so the nose points forward along path
+                const targetLook = new THREE.Vector3(x + tangentX, y + tangentY, z + tangentZ);
+                rocketGroup.lookAt(targetLook);
+                
+                // Align rocket forward nose axis (+Y in geometry) to directional path
                 rocketGroup.rotateX(Math.PI / 2);
+
+                // Animate Thruster Particles (Exhaust Stream)
+                if (thrusterParticles) {
+                    const positions = particleGeo.attributes.position.array;
+                    for (let i = 0; i < positions.length / 3; i++) {
+                        positions[i * 3 + 1] -= 0.035; // Move down exhaust line
+                        if (positions[i * 3 + 1] < -1.2) {
+                            positions[i * 3 + 1] = -0.55; // Reset near nozzle
+                            positions[i * 3] = (Math.random() - 0.5) * 0.06;
+                            positions[i * 3 + 2] = (Math.random() - 0.5) * 0.06;
+                        }
+                    }
+                    particleGeo.attributes.position.needsUpdate = true;
+                }
             }
 
+            // Render scene
             renderer.render(scene, camera);
         }
 
-        // Initialize on window load
+        // Initialize application after load
         window.onload = function() {
             init();
         };
