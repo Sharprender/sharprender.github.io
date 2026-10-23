@@ -88,7 +88,7 @@
             {id:'AURORA-1',kind:'sat',a:1.5,e:.05,i:1.25,N:-.8,w:0,M0:1.2,retro:1,col:'#a78bfa'},
             {id:'HELIOS-7',kind:'sat',a:1.8,e:.22,i:.8,N:2.4,w:1,M0:3,col:'#34d399'},
             {id:'VEGA-RELAIS',kind:'sat',a:1.35,e:.02,i:1.45,N:.3,w:0,M0:4.5,col:'#f472b6'},
-            {id:'LUNA-STATION',kind:'moon',a:2,e:.06,i:.3,N:-.5,w:0,M0:2,pf:2,col:'#cbd5e1'},
+            {id:'LUNA-STATION',kind:'sat',a:2,e:.06,i:.3,N:-.5,w:0,M0:2,col:'#cbd5e1'},
             {id:'ORION-STATION',kind:'station',a:1.18,e:0,i:.9,N:1.8,w:0,M0:5.2,col:'#fb923c'}];
         const TERRA={id:'TERRA-KONTROLLE',col:'#5fd0ff'},byId={'TERRA-KONTROLLE':TERRA};O.forEach(o=>byId[o.id]=o);
         const PHI=.38;
@@ -140,9 +140,9 @@
             else{g.fillStyle='#cfd6e6';g.beginPath();g.moveTo(26,0);g.lineTo(-16,-12);g.lineTo(-8,0);g.lineTo(-16,12);g.closePath();g.fill();g.fillStyle='rgba(60,70,90,.45)';g.beginPath();g.moveTo(26,0);g.lineTo(-8,0);g.lineTo(-16,12);g.closePath();g.fill();g.fillStyle='#5ad0ff';g.beginPath();g.arc(8,0,2.2,0,T);g.fill();g.fillStyle='rgba(120,200,255,.9)';g.beginPath();g.arc(-9,0,3,0,T);g.fill()}}
         function lpos(L,age,s){const r0=R*.7,ra=r0+(L.rA-r0)*(1-Math.exp(-age/3.5)),r=ra+(L.rW-ra)*s*s,ph=L.a+L.cv*.3*Math.min(1,age/6);return{x:cx+Math.cos(ph)*r,y:cy+Math.sin(ph)*r}}
         function drawLaunches(t){for(let i=LS.length-1;i>=0;i--){const L=LS[i],age=t-L.t0;if(age>25){LS.splice(i,1);continue}
-            const ws=L.w0?(t-L.w0)/1.1:0,s=Math.min(1,ws),P=lpos(L,age,s),Q=lpos(L,age+.05,s),h=Math.atan2(Q.y-P.y,Q.x-P.x);L.ent.live=P;
+            const ws=L.w0?(t-L.w0)/1.1:0,s=Math.min(1,ws),P=lpos(L,age,s),sq=L.w0?Math.min(1,(t+.05-L.w0)/1.1):0,Q=lpos(L,age+.05,sq),h0=Math.atan2(Q.y-P.y,Q.x-P.x),lh=L.h===undefined?h0:L.h,dd=Math.atan2(Math.sin(h0-lh),Math.cos(h0-lh)),h=ws>=1?lh:lh+dd*(L.lt?Math.min(1,(t-L.lt)*6):1);L.h=h;L.lt=t;L.ent.live=P;
             if(age<2.2){const q=lpos(L,0,0),gr=g.createRadialGradient(q.x,q.y,0,q.x,q.y,R*.2);gr.addColorStop(0,`rgba(255,190,100,${.8*(1-age/2.2)})`);gr.addColorStop(1,'rgba(255,120,40,0)');g.fillStyle=gr;g.fillRect(q.x-R*.2,q.y-R*.2,R*.4,R*.4)}
-            if(ws<1){g.save();g.translate(P.x,P.y);g.rotate(h);if(Math.cos(h)<0)g.scale(1,-1);const k=R/200*(.35+.65*Math.min(1,age/4))*L.ty.s;g.scale(k*(1+s*s*5),k*(1-.45*s));
+            if(ws<1){g.save();g.translate(P.x,P.y);g.rotate(h);if(L.fl)g.scale(1,-1);const k=R/200*(.35+.65*Math.min(1,age/4))*L.ty.s;g.scale(k*(1+s*s*5),k*(1-.45*s));
                 const tl=60+Math.min(age,8)*14,tg=g.createLinearGradient(-20,0,-20-tl,0);tg.addColorStop(0,`rgba(${150+s*100|0},210,255,.6)`);tg.addColorStop(1,'rgba(120,190,255,0)');g.fillStyle=tg;g.fillRect(-20-tl,-2.5,tl,5);
                 if(s>0){const gw=g.createRadialGradient(0,0,0,0,0,60);gw.addColorStop(0,`rgba(200,230,255,${s*.8})`);gw.addColorStop(1,'rgba(120,180,255,0)');g.fillStyle=gw;g.fillRect(-60,-60,120,120)}
                 vessel(L.ty.k,t);g.restore();g.fillStyle=L.ty.col;g.font='10px ui-monospace,Menlo,monospace';g.fillText(L.n,P.x+16,P.y-12)}
@@ -226,7 +226,7 @@
             return[[TK,n,n+', Startfreigabe erteilt. Triebwerke zünden.','launch',L],[n,TK,'Abgehoben. Steigflug nominal, Ziel Sektor {sec}.'],[TK,n,'Bahnfreigabe bestätigt. Verlassen Sie den Orbit auf Kurs {k}.'],[n,TK,'Warpfaktor {w} in drei, zwei, eins. Energie!','warp',L],[TK,n,'Gute Reise, '+n+'. Wir sehen uns bald wieder.']]}
         function edge(a){const dx=Math.cos(a),dy=Math.sin(a),rl=W>820?W-360:W-20,bl=W>820?H-20:H*.66,tx=dx>.001?(rl-cx)/dx:dx<-.001?(20-cx)/dx:1e9,ty=dy>.001?(bl-cy)/dy:dy<-.001?(70-cy)/dy:1e9;return Math.min(tx,ty)}
         function aim(L){for(let i=0;i<30;i++){L.a=rnd(0,T);L.cv=Math.random()<.5?1:-1;const e=Math.min(edge(L.a),edge(L.a+L.cv*.15),edge(L.a+L.cv*.3));if(e>R*2.3){L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55);return}}L.a=0;L.cv=1;const e=Math.max(R*2,edge(0));L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55)}
-        function act(it){const L=it[4];if(it[3]==='launch'){aim(L);L.t0=performance.now()/1000;L.w0=0;L.ent.live=null;LS.push(L)}else if(L.t0)L.w0=performance.now()/1000}
+        function act(it){const L=it[4];if(it[3]==='launch'){aim(L);L.fl=Math.cos(L.a)<0;L.h=undefined;L.lt=0;L.t0=performance.now()/1000;L.w0=0;L.ent.live=null;LS.push(L)}else if(L.t0)L.w0=performance.now()/1000}
         let ex=script.slice(0,3),ei=0,lastEx=-1,lastLaunch=-99,picks=0;
         function pickEx(){const now=performance.now()/1000,force=picks++===0;if(!LS.length&&now-lastLaunch>20&&(force||Math.random()<.5)){lastLaunch=now;return launchEx()}let i;do{i=Math.random()*EX.length|0}while(i===lastEx);lastEx=i;return EX[i]}
         function next(){if(ei>=ex.length){ex=pickEx();ei=0}return ex[ei++]}
