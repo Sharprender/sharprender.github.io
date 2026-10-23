@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Sharprender - Enterprise Edition</title>
+    <title>Sharprender - Star Trek Fleet Edition</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='d' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23060a18'/%3E%3Cstop offset='100%25' stop-color='%2301040a'/%3E%3C/linearGradient%3E%3Cfilter id='g' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1' result='blur'/%3E%3CfeComposite in='SourceGraphic' in2='blur' operator='over'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='url(%23b)' stroke='%2338bdf8' stroke-width='1.5' stroke-opacity='0.6'/%3E%3Cpath d='M32 11C38 27 48 41 53 52C55 56 51 60 46 57C40 53 36 50 32 48C28 50 24 53 18 57C13 60 9 56 11 52C16 41 26 27 32 11Z' fill='url(%23d)' filter='url(%23g)'/%3E%3C/svg%3E">
     <style>
         :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#01040a;--fg:#d8e4fc;--mut:#6f82a8}
@@ -132,7 +132,7 @@
         const N=A.idx.length;
         function drawPlanet(rp){const cp=rp*1.35;for(let k=0;k<N;k++){const t=A.ty[k],tx=((A.lon[k]+rp)|0)&2047,row=t*TW,ti=row+tx,b=ti*4,d=A.day[k];let lit=.045+d*1.05;if(tex[b+3])lit*=1+(hgt[row+((tx-1)&2047)]-hgt[row+((tx+1)&2047)])*.09;let r=tex[b]*lit,gg=tex[b+1]*lit,bl=tex[b+2]*lit;
             if(!tex[b+3]){const s=A.spec[k]*d*150;r+=s;gg+=s;bl+=s}
-            const cl=city[ti];if(cl&&d<.5){const n=(1-d*2)*cl/255;r+=200*n;gg+=220*n;bl+=255*n} // Kältere Stadtlichter (bläulich-weiß)
+            const cl=city[ti];if(cl&&d<.5){const n=(1-d*2)*cl/255;r+=200*n;gg+=220*n;bl+=255*n}
             const fx=A.lon[k]+cp,x0=Math.floor(fx),ax=fx-x0,y0=A.tf[k]|0,ay=A.tf[k]-y0,xa=x0&2047,xb=(x0+1)&2047,r0=y0*CW,r1=r0+CW,c0=((cloud[r0+xa]*(1-ax)+cloud[r0+xb]*ax)*(1-ay)+(cloud[r1+xa]*(1-ax)+cloud[r1+xb]*ax)*ay)/255,c=c0*c0*(3-2*c0)*.9*ca,w=255*(.05+d*.97),cs=0;r*=1-cs;gg*=1-cs;bl*=1-cs;r=r*(1-c)+w*c;gg=gg*(1-c)+w*c;bl=bl*(1-c)+(w+12)*c;
             const rm=A.rim[k]*(.15+d*1.1),wm=A.rim[k]*d*(1-d)*3.6,o=A.idx[k];dat[o]=r+40*rm+180*wm;dat[o+1]=gg+100*rm+120*wm;dat[o+2]=bl+240*rm+70*wm;dat[o+3]=A.al[k]}
             px.putImageData(img,0,0)}
@@ -180,6 +180,33 @@
             g.fillStyle='#cbd5e1';g.beginPath();g.arc(32,0,6,0,T);g.fill();g.fillStyle='rgba(51,65,85,.8)';g.beginPath();g.arc(32,0,2.2,0,T);g.fill();
             g.fillStyle='rgba(148,211,255,.85)';for(let i=0;i<9;i++){const a=i*.7;g.fillRect(28+Math.cos(a)*18-.6,Math.sin(a)*11-.6,1.2,1.2)}
             g.fillStyle=Math.sin(ot*5)>0?'#38bdf8':'#1e293b';g.fillRect(55,-1,2,2)}
+
+// --- FELD-SCHIFFE (Romulaner, Klingoner, Vulkanier) ---
+        function factionVessel(type) {
+            g.save();
+            if (type === 'romulan') {
+                // Romulan Warbird (Rautenförmig, grünlich-dunkel)
+                g.fillStyle = '#065f46';
+                g.beginPath(); g.moveTo(25, 0); g.lineTo(-10, -18); g.lineTo(-20, 0); g.lineTo(-10, 18); g.closePath(); g.fill();
+                g.strokeStyle = '#34d399'; g.lineWidth = 1; g.stroke();
+                g.fillStyle = '#34d399'; g.beginPath(); g.arc(5, 0, 3, 0, T); g.fill();
+            } else if (type === 'klingon') {
+                // Klingon Bird-of-Prey (Dunkelrot, angewinkelte Flügel)
+                g.fillStyle = '#7f1d1d';
+                g.beginPath(); g.moveTo(22, 0); g.lineTo(-8, -24); g.lineTo(-16, -6); g.lineTo(-10, 0); g.lineTo(-16, 6); g.lineTo(-8, 24); g.closePath(); g.fill();
+                g.strokeStyle = '#f87171'; g.lineWidth = 1; g.stroke();
+                g.fillStyle = '#f87171'; g.beginPath(); g.arc(12, 0, 2.5, 0, T); g.fill();
+            } else if (type === 'vulcan') {
+                // Vulcan Ring Ship (Kupfer/Gold, Ringstruktur)
+                g.fillStyle = '#b45309';
+                g.fillRect(-22, -3, 30, 6);
+                g.strokeStyle = '#fbbf24'; g.lineWidth = 1.5;
+                g.beginPath(); g.arc(8, 0, 12, -Math.PI/2, Math.PI/2); g.stroke();
+                g.fillStyle = '#38bdf8'; g.beginPath(); g.arc(-10, 0, 3, 0, T); g.fill();
+            }
+            g.restore();
+        }
+
         function sat(ot,col){g.fillStyle='#94a3b8';g.fillRect(-4,-3,8,6);
             for(const s of[-1,1]){const x=s>0?5:-19;g.fillStyle='#1e3a8a';g.fillRect(x,-3.2,14,6.4);g.strokeStyle='rgba(125,211,252,.6)';g.lineWidth=.5;g.beginPath();for(let i=1;i<4;i++){g.moveTo(x+i*3.5,-3.2);g.lineTo(x+i*3.5,3.2)}g.moveTo(x,0);g.lineTo(x+14,0);g.stroke()}
             g.fillStyle='#cbd5e1';g.beginPath();g.arc(0,-5,2.2,Math.PI,0);g.fill();
@@ -198,13 +225,15 @@
             g.fillStyle='#94a3b8';g.beginPath();g.roundRect(-34,-4.5,19,9,3);g.fill();g.beginPath();g.roundRect(15,-4.5,19,9,3);g.fill();
             g.fillStyle='#334155';g.fillRect(-37,-3,3,6);g.fillRect(34,-3,3,6);
             g.fillStyle='rgba(125,211,252,.9)';for(let i=0;i<5;i++)g.fillRect(-10+i*5,-1,2,2);for(let i=0;i<3;i++){g.fillRect(-30+i*5,-1,2,2);g.fillRect(19+i*5,-1,2,2)}
-            g.strokeStyle='#cbd5e1';g.lineWidth=1.2;g.beginPath();g.moveTo(37,0);g.lineTo(43,0);g.stroke();g.beginPath();g.arc(43,0,6,-11,11);g.stroke();
+            g.strokeStyle='#cbd5e1';g.lineWidth=1.2;g.beginPath();g.moveTo(37,0);g.lineTo(43,0);g.stroke();g.beginPath();g.arc(43,0,6,-1.1,1.1);g.stroke();
             g.fillStyle=Math.sin(ot*3)>0?'#38bdf8':'#090d16';g.fillRect(-1,-9,2,2)}
         function lunar(ot,r){moon(r*.8);g.save();g.translate(r*.95,-r*.55);g.scale(.62,.62);gateway(ot);g.restore()}
         function moon(r){const gr=g.createRadialGradient(-r*.35,-r*.35,r*.1,0,0,r*1.05);gr.addColorStop(0,'#cbd5e1');gr.addColorStop(.6,'#64748b');gr.addColorStop(1,'#1e293b');g.fillStyle=gr;g.beginPath();g.arc(0,0,r,0,T);g.fill();
-            g.fillStyle='rgba(30,41,59,.4)';for(const[a,b,s]of[[.3,.1,.22],[-.25,.35,.16],[.1,-.4,.14],[-.45,-.1,.1]]){g.beginPath();g.arc(a*r,b*r,s*r,0,T);g.fill()}}
+            g.fillStyle='rgba(30,41,59,.4लेक्ट्रon)';for(const[a,b,s]of[[.3,.1,.22],[-.25,.35,.16],[.1,-.4,.14],[-.45,-.1,.1]]){g.beginPath();g.arc(a*r,b*r,s*r,0,T);g.fill()}}
 
         const LS=[];
+        const ARRIVALS=[]; // Array für ankommende Faction-Schiffe
+
         function vessel(ty,t){
             if(ty==='cruiser'){g.scale(.6,.6);ship(t);return}
             if(ty==='shuttle'){g.fillStyle='#94a3b8';g.beginPath();g.roundRect(-14,-6,26,12,4);g.fill();g.fillStyle='#64748b';g.beginPath();g.moveTo(12,-6);g.lineTo(22,-1.5);g.lineTo(22,1.5);g.lineTo(12,6);g.fill();g.fillStyle='#38bdf8';g.fillRect(14,-2.5,5,5);g.fillStyle='#475569';g.fillRect(-16,-9,16,3);g.fillRect(-16,6,16,3);g.fillStyle=`rgba(56,189,248,${.6+.4*Math.sin(t*8)})`;g.fillRect(-14,-8.5,10,2);g.fillRect(-14,6.5,10,2)}
@@ -220,11 +249,10 @@
             const ws=L.w0?(t-L.w0)/1.1:0,s=Math.min(1,ws),P=lpos(L,age,s),sq=L.w0?Math.min(1,(t+.05-L.w0)/1.1):0,Q=lpos(L,age+.05,sq),h0=Math.atan2(Q.y-P.y,Q.x-P.x),lh=L.h===undefined?h0:L.h,dd=Math.atan2(Math.sin(h0-lh),Math.cos(h0-lh)),h=ws>=1?lh:lh+dd*(L.lt?Math.min(1,(t-L.lt)*6):1);L.h=h;L.lt=t;L.ent.live=P;
 
             const ph=L.a+L.cv*.3*Math.min(1,age/6);
-            const zLaunch = Math.sin(ph); // Ein grober, aber wirksamer Tiefenindikator.
+            const zLaunch = Math.sin(ph);
 
-// Tiefenprüfung:
-            if (depthPass === 'back' && zLaunch >= 0) continue; // Skip front ships
-            if (depthPass === 'front' && zLaunch < 0) continue; // Skip back ships
+            if (depthPass === 'back' && zLaunch >= 0) continue;
+            if (depthPass === 'front' && zLaunch < 0) continue;
 
             if(age<2.2){const q=lpos(L,0,0),gr=g.createRadialGradient(q.x,q.y,0,q.x,q.y,R*.2);gr.addColorStop(0,`rgba(56,189,248,${.8*(1-age/2.2)})`);gr.addColorStop(1,'rgba(14,116,144,0)');g.fillStyle=gr;g.fillRect(q.x-R*.2,q.y-R*.2,R*.4,R*.4)}
             if(ws<1){g.save();g.translate(P.x,P.y);g.rotate(h);if(L.fl)g.scale(1,-1);const k=R/200*(.35+.65*Math.min(1,age/4))*L.ty.s;g.scale(k*(1+s*s*5),k-.45*s);
@@ -232,7 +260,69 @@
                 if(s>0){const gw=g.createRadialGradient(0,0,0,0,0,60);gw.addColorStop(0,`rgba(180,220,255,${s*.8})`);gw.addColorStop(1,'rgba(80,150,255,0)');g.fillStyle=gw;g.fillRect(-60,-60,120,120)}
                 vessel(L.ty.k,t);g.restore();g.fillStyle=L.ty.col;g.font='10px ui-monospace,Menlo,monospace';g.fillText(L.n,P.x+16,P.y-12)}
             else{const ja=ws-1;if(ja>.9){LS.splice(i,1);continue}const a=1-ja/.9,fr=g.createRadialGradient(P.x,P.y,0,P.x,P.y,140*(.3+ja));fr.addColorStop(0,`rgba(255,255,255,${a})`);fr.addColorStop(.3,`rgba(130,190,255,${a*.5})`);fr.addColorStop(1,'rgba(50,110,220,0)');g.fillStyle=fr;g.fillRect(P.x-200,P.y-200,400,400);
-                const len=Math.min(1,ja*5)*Math.max(W,H),ex=P.x+Math.cos(h)*len,ey=P.y+Math.sin(h)*len,sg=g.createLinearGradient(P.x,P.y,ex,ey);sg.addColorStop(0,`rgba(200,230,255,${a})`);sg.addColorStop(1,'rgba(120,180,255,0)');g.strokeStyle=sg;g.lineWidth=2;g.beginPath();g.moveTo(P.x,P.y);g.lineTo(ex,ey);g.stroke()}}}
+                const len=Math.min(1,ja*5)*Math.max(W,H),ex=P.x+Math.cos(h)*len,ey=P.y+Math.sin(h)*len,sg=g.createLinearGradient(P.x,P.y,ex,ey);sg.addColorStop(0,`rgba(220,240,255,${a})`);sg.addColorStop(1,'rgba(160,200,255,0)');g.strokeStyle=sg;g.lineWidth=2;g.beginPath();g.moveTo(P.x,P.y);g.lineTo(ex,ey);g.stroke()}}}
+
+// --- ANKUNFT & LANDUNG (Subraum Warp -> Abbremsen -> Landen) ---
+        function drawArrivals(t) {
+            for (let i = ARRIVALS.length - 1; i >= 0; i--) {
+                const arr = ARRIVALS[i];
+                const age = t - arr.t0;
+                if (age > 30) { ARRIVALS.splice(i, 1); continue; }
+
+                // Phasen: 0-3s Warp-Ankunft, 3-10s Anflug & Abbremsen, 10-25s Sinkflug & Landung
+                let x, y, scale = 0.8, alpha = 1;
+                const angle = arr.angle;
+
+                if (age < 3) {
+                    // Warp-Streifen aus dem Deep Space
+                    const p = age / 3;
+                    const startDist = Math.max(W, H);
+                    const curDist = mix(startDist, R * 1.8, p);
+                    x = cx + Math.cos(angle) * curDist;
+                    y = cy + Math.sin(angle) * curDist;
+
+                    // Warp-Blitz & Schweif
+                    g.save();
+                    g.strokeStyle = arr.col;
+                    g.lineWidth = 3;
+                    g.beginPath();
+                    g.moveTo(x, y);
+                    g.lineTo(x - Math.cos(angle)*120, y - Math.sin(angle)*120);
+                    g.stroke();
+                    g.restore();
+                } else if (age < 12) {
+                    // Normaler Anflug / Orbit-Annäherung
+                    const p = (age - 3) / 9;
+                    const dist = mix(R * 1.8, R * 1.05, p);
+                    x = cx + Math.cos(angle) * dist;
+                    y = cy + Math.sin(angle) * dist;
+                } else {
+                    // Landung auf der Oberfläche (gleitet zum Planetenrand und schrumpft/faded aus)
+                    const p = Math.min(1, (age - 12) / 8);
+                    const dist = mix(R * 1.05, R * 0.96, p);
+                    x = cx + Math.cos(angle) * dist;
+                    y = cy + Math.sin(angle) * dist;
+                    scale = mix(0.8, 0.2, p);
+                    alpha = mix(1, 0, p);
+                }
+
+                g.save();
+                g.globalAlpha = alpha;
+                g.translate(x, y);
+                g.rotate(angle + Math.PI);
+                g.scale(scale, scale);
+                factionVessel(arr.faction);
+                g.restore();
+
+                // Schiffsname & Status
+                g.save();
+                g.globalAlpha = alpha;
+                g.fillStyle = arr.col;
+                g.font = '10px ui-monospace,Menlo,monospace';
+                g.fillText(arr.name + (age > 12 ? ' [Landed]' : ''), x + 14, y - 10);
+                g.restore();
+            }
+        }
 
         function ring(o,front,ot){g.beginPath();let pv=null;for(let k=0;k<=72;k++){const precession = (o.retro ? -0.015 : 0.01) * ot / (o.a * o.a * o.a);const p=proj(...orb(o,k/72*T, o.N + precession));if(pv&&((pv.d+p.d)/2>0)===!front){g.moveTo(pv.x,pv.y);g.lineTo(p.x,p.y)}pv=p}g.stroke()}
 
@@ -310,7 +400,8 @@
             g.setLineDash([2,6]);g.lineWidth=1;g.strokeStyle='rgba(130,170,255,.1)';O.forEach(o=>ring(o,false,ot));
             objs.filter(e=>e.P.z<0).forEach(e=>drawObj(e,ot));
 
-            drawLaunches(t, 'back'); // Hintergrund-Starts zeichnen
+            drawLaunches(t, 'back');
+            drawArrivals(t); // Anankommende Faction-Schiffe im Hintergrund zeichnen
 
             let gr=g.createRadialGradient(cx,cy,R*.92,cx,cy,R*1.42);
             gr.addColorStop(0,'rgba(50,130,255,.38)');
@@ -322,7 +413,7 @@
             g.setLineDash([2,6]);g.strokeStyle='rgba(130,170,255,.1)';O.forEach(o=>ring(o,true,ot));g.setLineDash([]);
             objs.filter(e=>e.P.z>=0).forEach(e=>drawObj(e,ot));
 
-            drawLaunches(t, 'front'); // Vordergrund-Starts zeichnen
+            drawLaunches(t, 'front');
 
             if(cur){const age=t-cur.t0;if(age<2.4){const pf=byId[cur.f],pt=byId[cur.to],P=id=>id===TERRA?{x:cx,y:cy}:id.live||(id.a?pos(id,ot):{x:cx,y:cy}),a=P(pf);
                 const fade=Math.max(0,1-age/2.4);
@@ -330,14 +421,11 @@
                 for(let i=0;i<2;i++){const q=age-i*.5;if(q>0){g.globalAlpha=Math.max(0,1-q/1.5)*.7;g.strokeStyle=pf.col;g.lineWidth=1.5;g.beginPath();g.arc(a.x,a.y,(pf===TERRA?R*1.05:8)+q*(pf===TERRA?R*.4:40),0,T);g.stroke()}}
                 g.globalAlpha=1}}
 
-            /* --- STAR TREK: ENTERPRISE FARBFILTER (Post-Processing Overlay) --- */
             g.save();
-            g.setTransform(D, 0, 0, D, 0, 0); // Bildschirm-Koordinaten
-// Kühler Stahlblau/Cyan-Multiplikator für den tiefen Sci-Fi-Look
+            g.setTransform(D, 0, 0, D, 0, 0);
             g.fillStyle = 'rgba(10, 40, 85, 0.14)';
             g.globalCompositeOperation = 'multiply';
             g.fillRect(0, 0, W, H);
-// Zarte Aufhellung/Overlay für den filmischen Kontrast
             g.fillStyle = 'rgba(20, 50, 100, 0.07)';
             g.globalCompositeOperation = 'overlay';
             g.fillRect(0, 0, W, H);
@@ -348,10 +436,17 @@
         addEventListener('resize',resize);addEventListener('pointermove',e=>tmx=e.clientX/W-.5);
         resize();requestAnimationFrame(frame);
 
+// --- ERWEITERTER FUNKVERKEHR MIT FRAKTIONEN ---
         const feed=document.getElementById('feed'),TK='TERRA-KONTROLLE',SH='SHARPRENDER';
         const script=[
             [TK,SH,'Willkommen im Orbit, Sharprender. Bitte Kurs und Geschwindigkeit bestätigen.'],
             [SH,TK,'Kurs bestätigt. Impulsantrieb auf 0,25, Schilde im Standby.'],
+            ['VULKAN-SCHIFF',TK,'Hier vulkanisches Forschungsschiff T\'Kal. Ersuchen Landeerlaubnis im Sektor Alpha.'],
+            [TK,'VULKAN-SCHIFF','T\'Kal, Landeerlaubnis erteilt. Willkommen im Heimatsystem.'],
+            ['KLINGONEN-BOP',TK,'Klingonischer Bird-of-Prey IKS Vortagh erbittet Landebucht für Diplomatie-Abgesandte.'],
+            [TK,'KLINGONEN-BOP','IKS Vortagh, Kurs auf Landebucht 4. Keine Schusswaffen bereithalten.'],
+            ['ROMULAN-WARBIRD',TK,'Romulanischer Warbird Valdore fordert Passagierrechte und Landeoption.'],
+            [TK,'ROMULAN-WARBIRD','Valdore, scannen Sie den Landekorridor. Freigabe erteilt.'],
             ['AURORA-1',TK,'Telemetrie stabil. Solarpaneele zu 98 % ausgerichtet.'],
             [TK,'AURORA-1','Verstanden, Aurora. Datenübertragung läuft.'],
             ['HELIOS-7',SH,'Achtung: Mikrometeoritenschauer in Sektor 7. Empfehle Kursanpassung um 3 Grad.'],
@@ -361,46 +456,61 @@
             [TK,SH,'Sternzeit 2610.24: Andockfreigabe für Dock 3 erteilt.'],
             [SH,'LUNA-STATION','Hier Sharprender. Nähern uns Ihrer Position, bitte um Traktorstrahl-Freigabe.'],
             ['LUNA-STATION',SH,'Freigabe erteilt. Traktorstrahl bereit.'],
-            ['AURORA-1','VEGA-RELAIS','Relais-Test: bitte Ping bestätigen.'],
             ['ORION-STATION',TK,'Station Orion meldet: Rotation stabil, Besatzung wohlauf, Andockbucht 2 frei.'],
-            [TK,'ORION-STATION','Verstanden, Orion. Versorgungsshuttle startet in zehn Minuten.'],
             [SH,'ORION-STATION','Orion-Station, hier Sharprender. Bitte um Besuchserlaubnis für den Hangar.'],
             ['ORION-STATION',SH,'Willkommen, Sharprender. Hangar 1 ist vorbereitet.'],
-            ['VEGA-RELAIS','AURORA-1','Ping empfangen. Latenz 12 ms.'],
-            ['HELIOS-7',TK,'Nachtseite zeigt Stadtlichter über dem Kontinent. Ein schöner Anblick.'],
-            [TK,'ALLE','An alle Einheiten: Wetterfenster stabil, Orbit frei.'],
-            [SH,TK,'Warpkern stabil. Wir halten den Orbit, bis neue Befehle eintreffen.']];
+            [TK,'ALLE','An alle Einheiten: Wetterfenster stabil, Orbit frei.']];
+
+        const FACTION_NAMES = [
+            {id: 'VULKAN-SCHIFF', faction: 'vulcan', name: 'Vulkan Schiff T\'Kal', col: '#fbbf24'},
+            {id: 'KLINGONEN-BOP', faction: 'klingon', name: 'IKS Vortagh', col: '#f87171'},
+            {id: 'ROMULAN-WARBIRD', faction: 'romulan', name: 'Warbird Valdore', col: '#34d399'}
+        ];
+
+        FACTION_NAMES.forEach(f => byId[f.id] = f);
+
         const TYPES=[{k:'shuttle',col:'#38bdf8',s:1.5,n:['Shuttle Galileo','Shuttle Curie','Shuttle Hopper']},{k:'freighter',col:'#f87171',s:1.2,n:['Frachter Meridian','Frachter Atlas','Frachter Nomad']},{k:'scout',col:'#2dd4bf',s:1.4,n:['Späher Kestrel','Späher Wisp','Späher Lynx']},{k:'cruiser',col:'#60a5fa',s:1,n:['USS Valiant','USS Kepler','USS Odyssey','USS Hypatia']}];
-        const A1='AURORA-1',H7='HELIOS-7',VR='VEGA-RELAIS',LU='LUNA-STATION',OR='ORION-STATION';
+
         const EX=[
-            [[A1,TK,'Telemetrie Sektor {sec}: alle Systeme grün, Energie {p} %.'],[TK,A1,'Daten empfangen. Weiter so.']],
-            [[H7,TK,'Sonneneruption der Klasse M{k} erkannt. Schutzmodus aktiviert.'],[TK,'ALLE','An alle Einheiten: Strahlungswarnung für zehn Minuten.'],[OR,TK,'Station Orion bestätigt. Besatzung ist im Strahlenschutzraum.']],
-            [[VR,TK,'Subraum-Relais {k} online. Latenz {ms} ms.']],
-            [[LU,TK,'Staubsturm im Mare {k}. Sichtweite eingeschränkt.'],[TK,LU,'Verstanden. Bleiben Sie unter Dach.']],
-            [[SH,TK,'Sternzeit {sz}: Routinepatrouille ohne besondere Vorkommnisse.'],[TK,SH,'Danke, Sharprender. Bleiben Sie auf Kurs.']],
-            [[OR,SH,'Sharprender, Ihre Position liegt {k} Kilometer zu nah an unserer Rotationsachse.'],[SH,OR,'Verstanden. Abstand wird vergrößert.']],
-            [[TK,'ALLE','Wetterbericht: klare Sicht über allen Kontinenten, Orbitfenster offen.']],
-            [[H7,A1,'Aurora, bitte Position gegenchecken. Mein Sternsensor zeigt {k} Bogensekunden Abweichung.'],[A1,H7,'Position bestätigt. Sie driften leicht, bitte korrigieren.'],[H7,A1,'Korrektur ausgeführt. Danke.']],
-            [[SH,LU,'Bitte um Scandaten der Mondrückseite, Sektor {sec}.'],[LU,SH,'Daten werden übertragen. Interessante Mineralsignatur dabei.']],
-            [[VR,OR,'Orion, Ihr Versorgungsshuttle meldet {k} Minuten Verspätung.'],[OR,VR,'Verstanden. Wir halten die Andockbucht frei.']],
-            [[TK,A1,'Aurora, die Nachtseite zeigt eine ungewöhnliche Wolkenformation. Bitte Bildaufnahme.'],[A1,TK,'Aufnahme läuft. Auflösung 40 Zentimeter.']],
-            [[OR,TK,'Das Labor meldet einen neuen Mikrogravitations-Kristall. Wir sind begeistert.'],[TK,OR,'Glückwunsch! Bitte Bericht an die Akademie senden.']],
-            [[SH,TK,'Schildtest abgeschlossen. Alle Systeme im grünen Bereich.']],
-            [[H7,TK,'Unbekanntes Objekt auf Kollisionskurs?'],[TK,H7,'Negativ. Es ist ein ausgedienter Wettersatellit. Ignorieren.']]];
+            [[FACTION_NAMES[0].id,TK,'Vulkanischer Orbit-Anflug eingeleitet. Sinken auf Planetenoberfläche.']],
+            [[FACTION_NAMES[1].id,TK,'Klingonische Landung vorbereitet. Ehre dem Boden von Terra!']],
+            [[FACTION_NAMES[2].id,TK,'Tarnung deaktiviert. Landekorridor bestätigt.']],
+            [[TK,'ALLE','Raumverkehrskontrolle: Alle Faction-Schiffe erfolgreich gelandet.']]
+        ];
+
         function fill(s){return s.replace(/\{(\w+)\}/g,(_,k)=>({sec:1+Math.random()*12|0,sz:'2610.'+(100+Math.random()*265|0),p:90+Math.random()*9|0,ms:5+Math.random()*35|0,k:2+Math.random()*46|0,w:rnd(2,9).toFixed(1).replace('.',',')})[k])}
+
         function launchEx(){const ty=TYPES[Math.random()*4|0],n=ty.n[Math.random()*ty.n.length|0],L={ty,n,a:rnd(0,T),cv:Math.random()<.5?1:-1,ent:byId[n]=byId[n]||{id:n,col:ty.col}};
             return[[TK,n,n+', Startfreigabe erteilt. Triebwerke zünden.','launch',L],[n,TK,'Abgehoben. Steigflug nominal, Ziel Sektor {sec}.'],[TK,n,'Bahnfreigabe bestätigt. Verlassen Sie den Orbit auf Kurs {k}.'],[n,TK,'Warpfaktor {w} in drei, zwei, eins. Energie!','warp',L],[TK,n,'Gute Reise, '+n+'. Wir sehen uns bald wieder.']]}
+
+// Triggert anankommende Schiffe aus dem Subraum
+        function triggerArrival() {
+            const f = FACTION_NAMES[Math.floor(Math.random() * FACTION_NAMES.length)];
+            ARRIVALS.push({
+                faction: f.faction,
+                name: f.id,
+                col: f.col,
+                angle: rnd(0, T),
+                t0: performance.now() / 1000
+            });
+        }
+
         function edge(a){const dx=Math.cos(a),dy=Math.sin(a),rl=W>820?W-360:W-20,bl=W>820?H-20:H*.66,tx=dx>.001?(rl-cx)/dx:dx<-.001?(20-cx)/dx:1e9,ty=dy>.001?(bl-cy)/dy:dy<-.001?(70-cy)/dy:1e9;return Math.min(tx,ty)}
         function aim(L){for(let i=0;i<30;i++){L.a=rnd(0,T);L.cv=Math.random()<.5?1:-1;const e=Math.min(edge(L.a),edge(L.a+L.cv*.15),edge(L.a+L.cv*.3));if(e>R*2.3){L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55);return}}L.a=0;L.cv=1;const e=Math.max(R*2,edge(0));L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55)}
         function act(it){const L=it[4];if(it[3]==='launch'){aim(L);L.fl=Math.cos(L.a)<0;L.h=undefined;L.lt=0;L.t0=performance.now()/1000;L.w0=0;L.ent.live=null;LS.push(L)}else if(L.t0)L.w0=performance.now()/1000}
+
         let ex=script.slice(0,3),ei=0,lastEx=-1,lastLaunch=-99,picks=0;
-        function pickEx(){const now=performance.now()/1000,force=picks++===0;if(!LS.length&&now-lastLaunch>20&&(force||Math.random()<.5)){lastLaunch=now;return launchEx()}let i;do{i=Math.random()*EX.length|0}while(i===lastEx);lastEx=i;return EX[i]}
+        function pickEx(){
+            const now=performance.now()/1000,force=picks++===0;
+            if(!LS.length&&now-lastLaunch>20&&(force||Math.random()<.5)){lastLaunch=now; triggerArrival(); return launchEx()}
+            let i;do{i=Math.random()*EX.length|0}while(i===lastEx);lastEx=i;return EX[i]
+        }
         function next(){if(ei>=ex.length){ex=pickEx();ei=0}return ex[ei++]}
         function type(el,s){let i=0;(function n(){el.textContent=s.slice(0,++i);if(i<s.length)setTimeout(n,20)})()}
         function say(){const it=next(),f=it[0],to=it[1],txt=fill(it[2]),m=document.createElement('div');m.className='msg';
             const meta=document.createElement('div');meta.className='meta';
             const t=document.createElement('span');t.textContent=new Date().toLocaleTimeString('de-DE');
-            const a=document.createElement('b');a.textContent=f;a.style.color=byId[f].col;
+            const a=document.createElement('b');a.textContent=f;a.style.color=byId[f]?byId[f].col:'#38bdf8';
             const ar=document.createElement('span');ar.textContent='→';
             const b=document.createElement('b');b.textContent=to;b.style.color=byId[to]?byId[to].col:'#cbd5e1';
             meta.append(t,a,ar,b);const x=document.createElement('div');x.className='txt';m.append(meta,x);feed.append(m);
