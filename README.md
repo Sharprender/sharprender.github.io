@@ -1,2 +1,0 @@
-# sharprender.github.io
-Sharprender
