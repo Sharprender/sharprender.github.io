@@ -10,6 +10,43 @@
         html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
         #c{position:fixed;inset:0;width:100%;height:100%;display:block}
 
+        /* Start-Animation: Oben platziert, kühles Enterprise-Blau, sanftes Ein- und langsames Ausblenden */
+        #intro-greeting {
+            position: fixed;
+            top: 8vh;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+            font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            color: #7aa2e3;
+            text-shadow: 0 0 15px rgba(82, 131, 209, 0.4);
+            animation: fadeInOut 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                letter-spacing: 0.4em;
+                filter: blur(4px);
+            }
+            25% {
+                opacity: 1;
+                letter-spacing: 0.25em;
+                filter: blur(0px);
+            }
+            65% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                filter: blur(2px);
+            }
+        }
+
         /* Funk-Panel (Standard Desktop: Unten rechts verankert) */
         #comm{
             position:fixed;
@@ -111,6 +148,7 @@
     </style>
 </head>
 <body>
+<div id="intro-greeting">Lebe lang und in Frieden 🖖</div>
 <canvas id="c"></canvas>
 <aside id="comm" aria-label="Funkverkehr">
     <header id="comm-header">
@@ -496,6 +534,15 @@
         }
         generateMoonTexture();
 
+        function moon(r) {
+            g.save();
+            g.beginPath();
+            g.arc(0, 0, r, 0, T);
+            g.clip();
+            g.drawImage(moonCanvas, -r, -r, r * 2, r * 2);
+            g.restore();
+        }
+
         function drawRealisticMoon(P, ot, o) {
             g.save();
             g.translate(P.x, P.y);
@@ -820,7 +867,6 @@
             ['AURORA-1',TK,'Telemetrie stabil. Solarpaneele zu 98 % ausgerichtet.'],
             [TK,'AURORA-1','Verstanden, Aurora. Datenübertragung läuft.']];
 
-// ERWEITERTE UND ABWECHSLUNGSREICHERE EREIGNIS-VORLAGEN
         const INCIDENT_TEMPLATES = [
             () => {
                 const shipA = generateRandomName('fed');
@@ -867,7 +913,6 @@
                     [SH, HQ, `Sharprender empfängt Notruf von ${ship}. Traktorstrahl und Reparatur-Teams aktiviert.`]
                 ];
             },
-            // NEUE EREIGNISSE FÜR MEHR ABWECHSLUNG:
             () => {
                 const ship = generateRandomName('fed');
                 const planetName = ['Vulcan', 'Andoria', 'Tellar', 'Risa', 'Babel'][Math.random() * 5 | 0];
@@ -961,6 +1006,8 @@
             type(x,txt);cur={f,to,t0:performance.now()/1000};act(it);
             setTimeout(say,txt.length*22+rnd(1400,2600))}
         setTimeout(say,1500);
+
+        requestAnimationFrame(frame);
     })();
 </script>
 </body>
