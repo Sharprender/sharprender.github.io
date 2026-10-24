@@ -10,7 +10,7 @@
         html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
         #c{position:fixed;inset:0;width:100%;height:100%;display:block}
 
-        /* Start-Animation: Längere Standzeit (8s), kühles Enterprise-Blau, sanftes Ein- und langsames Ausblenden */
+        /* Start-Animation */
         #intro-greeting {
             position: fixed;
             top: 8vh;
@@ -28,26 +28,13 @@
         }
 
         @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-                letter-spacing: 0.4em;
-                filter: blur(4px);
-            }
-            15% {
-                opacity: 1;
-                letter-spacing: 0.25em;
-                filter: blur(0px);
-            }
-            75% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                filter: blur(2px);
-            }
+            0% { opacity: 0; letter-spacing: 0.4em; filter: blur(4px); }
+            15% { opacity: 1; letter-spacing: 0.25em; filter: blur(0px); }
+            75% { opacity: 1; }
+            100% { opacity: 0; filter: blur(2px); }
         }
 
-        /* Funk-Panel (Standard Desktop: Unten rechts verankert) */
+        /* Funk-Panel */
         #comm{
             position:fixed;
             right:20px;
@@ -124,6 +111,27 @@
         .meta b{font-weight:600}
         .txt{color:#c8d4ef}
 
+        /* Semantic Versioning Badge - Dunkelblau / Kalter Metallic-Look & Flexibel */
+        #version-badge {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            font-family: ui-monospace, Menlo, Monaco, monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: #8ab4f8;
+            background: linear-gradient(135deg, rgba(13, 27, 62, 0.9), rgba(7, 15, 35, 0.95));
+            border: 1px solid rgba(56, 131, 248, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(138, 180, 248, 0.2);
+            text-shadow: 0 0 6px rgba(56, 189, 248, 0.3);
+            user-select: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         /* Funk Vollhöhe (Desktop) */
         #expand-btn{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:#38bdf8;padding:2px 6px;border-radius:4px;font-size:.65rem;cursor:pointer;font-family:ui-monospace,Menlo,monospace;margin-right:6px}
         #expand-btn:hover{background:rgba(56,189,248,.3)}
@@ -132,7 +140,6 @@
         #comm.full .msg{font-size:.85rem}
         #comm.full .meta{font-size:.7rem}
         #comm.collapsed{top:auto!important}
-        /*MOBIL_FIX*/
 
         /* Button-Fix */
         #comm header{gap:8px;flex-wrap:nowrap;white-space:nowrap}
@@ -141,12 +148,12 @@
         #expand-btn{margin-left:2px}
         #expand-btn svg{display:block}
 
-        /* Mobile Optimierung */
+        /* Mobile Optimierung & Badge-Anpassung nach Ausrichtung */
         @media (max-width:820px){
             #comm{
                 left:10px;
                 right:10px;
-                bottom:0;
+                bottom:10px;
                 width:auto;
                 border-radius:18px 18px 0 0;
                 border-left:none;
@@ -161,6 +168,20 @@
             }
             #feed{padding:10px 14px;gap:8px}
             .msg{font-size:.7rem}
+
+            /* Badge sitzt im mobilen Modus direkt über dem eingeklappten Panel */
+            #version-badge {
+                left: 10px;
+                right: 10px;
+                bottom: calc(10px + 45px); /* Platziert es passgenau über dem kleinen Header */
+                text-align: center;
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+            /* Wenn Panel im Vollbildmodus ist, wandert das Badge nach oben mit */
+            #comm.full ~ #version-badge {
+                bottom: calc(10px + 64vh);
+            }
         }
         @media (max-width:820px){
             #comm{padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -175,14 +196,23 @@
             #comm.full #feed-container{min-height:50vh;max-height:70vh}
         }
 
-        /*COLLAPSE_FIX*/
         #comm.collapsed #feed-container{flex:none!important;min-height:0!important;max-height:0!important;opacity:0!important;pointer-events:none}
         #comm.collapsed{top:auto!important;height:auto!important}
+        /* Wenn eingeklappt auf Mobile, rückt das Badge wieder tiefer */
+        @media (max-width:820px){
+            #comm.collapsed ~ #version-badge {
+                bottom: calc(10px + 45px);
+            }
+        }
     </style>
 </head>
 <body>
 <div id="intro-greeting">Lebe lang und in Frieden 🖖</div>
 <canvas id="c"></canvas>
+
+<!-- Semantic Versioning Badge -->
+<div id="version-badge" aria-label="Software Version">v1.4.1</div>
+
 <aside id="comm" aria-label="Funkverkehr">
     <header id="comm-header">
         <span class="dot"></span>
@@ -322,11 +352,11 @@ void main(){
 
             if(W <= 820) {
                 cy = H * 0.35;
-                R = Math.min(W, H) * 0.24; // Deutlich vergrößerter Radius für Mobilgeräte
-                scaleFactor = 1.35; // Zusätzlicher Skalierungsfaktor für Schiffe auf Handys
+                R = Math.min(W, H) * 0.24;
+                scaleFactor = 1.35;
             } else {
                 cy = H / 2;
-                R = Math.min(W, H) * 0.20; // Vergrößerter Radius für Desktop (vorher 0.16)
+                R = Math.min(W, H) * 0.20;
                 scaleFactor = 1.15;
             }
 
@@ -560,7 +590,7 @@ void main(){
 
         function lunar(ot,r){moon(r*.8);g.save();g.translate(r*.95,-r*.55);g.scale(.75 * scaleFactor, .75 * scaleFactor);gateway(ot);g.restore()}
 
-// --- MOND-TEXTURE-GENERATOR ---
+        // --- MOND-TEXTURE-GENERATOR ---
         const MOON_PS = 512;
         const moonCanvas = document.createElement('canvas');
         moonCanvas.width = moonCanvas.height = MOON_PS;
@@ -783,7 +813,7 @@ void main(){
             }
 
             g.save();g.translate(P.x,P.y);
-            const k=R/200*(.85+.20*P.z)*scaleFactor; // Schiffe um ca. 30 % vergrößert
+            const k=R/200*(.85+.20*P.z)*scaleFactor;
             if(o.kind==='ship'){
                 const q=pos(o,ot+.03);
                 const h=Math.atan2(q.y-P.y,q.x-P.x);
@@ -1044,11 +1074,9 @@ void main(){
             }
         ];
 
-        /*EVENTS_PATCH*/
         const PL=`Vulcan,Andoria,Tellar Prime,Risa,Betazed,Bajor,Cardassia Prime,Qo'noS,Romulus,Remus,Ferenginar,Trill,Denobula,Xindus,Talax,Rigel VII,Altair VI,Delta Vega,Ceti Alpha V,Organia,Rura Penthe,Khitomer,Praxis,Archanis IV,Berengaria VII,Beta Hydri II,Hanolin,Janus VI,Omicron Ceti III,Pollux IV,Regulus V,Talos IV,Tycho IV,Wolf 359,Zeta Gelis,Argelius II,Cait,Camus II,Capella IV,Cygnet XIV,Gamma Hydra,Gideon,Halcyon,Iotia,Kelva,Marcos XII,Nimbus III,Pyris VII,Rojan,Sarpeidon,Aldea,Ardana,Benzar,Bre'el IV,Chal,Deneva,Eminiar VII,Exo III,Galen IV,Ligon II,Mantiles,Mudd,Neural,Platonius,Psi 2000,Sigma Draconis VI,Taurus II,Vendikar,Zalkon,Ariannus,Bolarus IX,Cestus III,Tarsus IV,Epsilon Eridani,Procyon V,Tau Ceti IV,Alpha Centauri,Lyra Minor,Kestrel Reach,Aurelia,Brevik,Corvane,Dravos,Elysar,Fenwick,Galatea,Haven's Rest,Isodar,Jovian Ring,Kaltara,Lumeria,Meridian IX,Nyxar,Orpheus,Pelagos,Quillon,Ravenna,Solace,Thessaly,Umbriel,Valkyr,Westmark,Xenara,Ysolde,Zephyria,Ashgrove,Borealis,Cinder,Dunmere,Eventide`.split(','),
             RC=`Menschen|||#38bdf8|fed;Vulkanier|||#fbbf24|vulcan;Klingonen|||#f87171|klingon;Romulaner|||#34d399|romulan;Cardassianer|Cardassianischer Kreuzer|Hideki,Keldon,Galor,Prakesh,Torr|#fb923c;Ferengi|Ferengi-Marauder|Goldpreis,Latinum-Traum,Kassenschlager,Profit,Dividende|#facc15;Andorianer|Andorianischer Kreuzer|Kumari,Thalaron,Shran,Weißeis,Ch'Thane|#7dd3fc;Bajoraner|Bajoranisches Schiff|Prophet,Kendra,Ashalla,Solbor,Lunar|#f0abfc;Tellariten|Tellaritischer Frachter|Grunz,Dickschädel,Hartkopf,Gegenrede,Disput|#a3e635;Breen|Breen-Dreadnought|Chot,Thot,Frost,Gletscher,Eisenfaust|#94a3b8;Gorn|Gorn-Kreuzer|Schuppenwacht,Echse,Kazar,Steinkralle,Sonnenhort|#4ade80;Orioner|Orion-Schmuggler|Schattenhandel,Smaragdkuss,Nachtmarkt,Seidenfaden,Jadeblüte|#2dd4bf;Trill|Trill-Forschungsschiff|Dax,Symbiose,Leben,Gefährte,Zhian'tara|#c4b5fd;Betazoiden|Betazoiden-Gesandtschaft|Empathie,Troi,Lwaxana,Gedankenfluss,Seelenklang|#f9a8d4;Denobulaner|Denobulaner-Transporter|Phlox,Heiterkeit,Zwillingsmond,Flora,Heilkunde|#fde68a;Xindi|Xindi-Aviar|Flügelschlag,Himmelsjäger,Aquatik,Insektoid,Arboreal|#86efac;Talaxianer|Talaxianischer Händler|Neelix,Rinax,Leolakon,Fußwärmer,Kochtopf|#fdba74;Kazon|Kazon-Raider|Ogla,Nistrim,Relora,Halik,Mostral|#ef4444;Hirogen|Hirogen-Jäger|Trophäe,Fährte,Beutegreifer,Ahnenjagd,Mondjäger|#d97706;Suliban|Suliban-Zellenschiff|Cabal,Gestaltwandler,Schleicher,Tarn,Zeitgänger|#a78bfa;Tholianer|Tholianisches Netzschiff|Kristallnetz,Spinne,Hitzewebe,Prisma,Gitter|#fca5a5;Jem'Hadar|Jem'Hadar-Kampfschiff|Kampfgeboren,Ketracel,Vorta-Wille,Dominion,Gründer-Tross|#a855f7`.split(';').map(s=>s.split('|')),
             EV=[
-                // Kataklysmen
                 `H>A|🔥 KATAKLYSMUS: Instabiler Stern im {c}-System – Supernova in {n} Stunden erwartet. Evakuierung läuft!¦a>H|{a} übernimmt die Evakuierung von {k} Zivilisten.`,
                 `c>A|🚨 {c}: Asteroidenschwarm im Anflug, Einschlag in {n} Minuten. Planetare Schilde bei {x} %.¦b>c|{b} bildet einen Abfangkordon, Phaser auf Zerstörung der Brocken.`,
                 `H>A|🌀 WARNUNG: Gravitationswelle eines kollabierenden Schwarzen Lochs trifft Sektor {sec}. Kurs ändern!¦a>H|{a}: Trägheitsdämpfer am Limit, weichen aus.`,
@@ -1056,7 +1084,6 @@ void main(){
                 `c>H|☣️ SEUCHENALARM auf {c}: Unbekanntes Virus, {k} Infizierte. Bitte um medizinische Hilfe.¦a>c|{a}: Medizinschiff unterwegs, Impfstoff-Synthese beginnt in {n} Stunden.¦H>A|Quarantäne über {c} verhängt.`,
                 `H>A|⏳ ZEITANOMALIE nahe {c}: Chroniton-Pegel steigt, temporale Schilde aktivieren!¦b>T|{b} meldet Chronometer-Abweichung von {n} Sekunden.`,
                 `c>A|☀️ Sonneneruption der Klasse X bei {c}: Kommunikation gestört, Solarkollektoren abgeschaltet.¦T>c|Terra-Kontrolle leitet Notstrom über Relais um.`,
-                // Attacken
                 `c>H|🚨 ÜBERFALL auf {c}: Piratenflotte im Orbit, Schilde fallen!¦b>H|{b} eilt zur Verteidigung von {c}, Ankunft in {n} Minuten.`,
                 `H>A|🟩 BORG-ALARM: Kubus bei {c} gesichtet. Alle Schiffe Abfangformation!¦a>H|{a} bestätigt, Schilde auf Maximum.`,
                 `H>A|⚔️ Jem'Hadar-Kampfverband greift {c} an. Zivile Verluste: {n}.¦b>H|{b} hält die Linie, bitte um Verstärkung.`,
@@ -1065,20 +1092,17 @@ void main(){
                 `c>H|💥 SABOTAGE auf {c}: Reaktor der Minenanlage manipuliert, {n} Vermisste.¦a>c|{a} sucht nach Überlebenden.`,
                 `b>H|Konvoi bei {c}: {b} meldet Überfall, {x} % der Ladung geraubt.¦H>A|Handelsrouten durch Sektor {sec} nur noch mit Geleit.`,
                 `H>A|🧬 BIOSCHIFF-ALARM: Spezies 8472 bricht in Sektor {sec} aus dem Fluidraum. Alle Schiffe meiden!¦a>H|{a} meldet organische Hülle, Phaser wirkungslos.`,
-                // Ankündigungen
                 `H>A|📣 Friedensvertrag zwischen Föderation und {rb} unterzeichnet.¦b>H|{b}: Die {rb} danken. Frieden für {n} Jahre vereinbart.`,
                 `H>A|📣 Handelsabkommen: Die {rb} erhalten Dilithium-Schürfrechte bei {c}.¦T>b|{b}, Frachtfreigabe für Sektor {sec} erteilt.`,
                 `H>A|📣 Sperrzone: Sektor {sec} ab sofort wegen Anomalie gesperrt.¦a>H|{a} bestätigt und ändert Kurs auf {c}.`,
                 `H>A|📣 Erstkontakt! Unbekannte Spezies bei {d} entdeckt. Diplomatenteam entsandt.¦a>H|{a} nähert sich vorsichtig, Universalübersetzer läuft.`,
                 `H>A|📣 Thronwechsel bei den {rb}: neuer Anführer vereidigt. Glückwünsche der Föderation.¦b>H|{b} dankt, Feierlichkeiten auf {c}.`,
                 `H>A|📣 Flottenmanöver in Sektor {sec}, {n} Schiffe beteiligt. Zivile Routen meiden.¦a>T|{a} meldet Übungsstart, Feuerfreigabe nur auf Zielsonden.`,
-                // Treffen
                 `^T>a|{a}, willkommen im Orbit. Die Delegation der {ra} wird erwartet.¦a>T|Danke, Terra-Kontrolle. Gipfeltreffen beginnt in {n} Minuten.`,
                 `a>b|{a} an {b}: Rendezvous bei {c} bestätigt. Fracht wird übergeben.¦b>a|{b} empfängt Datenpakete, danke für die Eskorte.`,
                 `H>A|🎭 Kulturfestival auf {c}: Musik und Küche der {rb} und {ra}. Alle Besatzungen eingeladen!¦c>A|Kolonisten von {c} begrüßen die Gäste mit {n} Banketten.`,
                 `H>b|Gefangenenaustausch bei {c}: {n} Personen kehren heim.¦b>H|{b} bestätigt die Übergabe, alle wohlauf.`,
                 `H>A|🪙 Handelsmesse auf {c}: Händler der {rb} bieten Waren aus {n} Systemen.¦b>T|{b} bittet um Landeerlaubnis für den Messestand.`,
-                // Berichte aus den Kolonien
                 `c>H|📋 Bericht {c}: Ernte {x} % des Solls, Wasserversorgung stabil, Bevölkerung {k}.¦H>c|Danke, {c}. Saatgutlieferung ist unterwegs.`,
                 `c>H|📋 {c}: Terraforming bei {x} %, Atmosphäre atembar ab Zyklus {n}.¦H>c|Forschungsteam wird verstärkt.`,
                 `d>H|⛏️ Bergbau auf {d}: neue Dilithiumader entdeckt, geschätzte Ausbeute {k} Tonnen.¦H>d|Förderlizenz genehmigt, {a} sichert den Abbau.`,
