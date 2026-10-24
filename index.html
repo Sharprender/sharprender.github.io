@@ -3,14 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Sharprender - Star Fleet Edition</title>
+    <title>Sharprender - Star Fleet</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='d' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23060a18'/%3E%3Cstop offset='100%25' stop-color='%2301040a'/%3E%3C/linearGradient%3E%3Cfilter id='g' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1' result='blur'/%3E%3CfeComposite in='SourceGraphic' in2='blur' operator='over'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='url(%23b)' stroke='%2338bdf8' stroke-width='1.5' stroke-opacity='0.6'/%3E%3Cpath d='M32 11C38 27 48 41 53 52C55 56 51 60 46 57C40 53 36 50 32 48C28 50 24 53 18 57C13 60 9 56 11 52C16 41 26 27 32 11Z' fill='url(%23d)' filter='url(%23g)'/%3E%3C/svg%3E">
     <style>
         :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#01040a;--fg:#d8e4fc;--mut:#6f82a8}
         html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
         #c{position:fixed;inset:0;width:100%;height:100%;display:block}
-        h1{position:fixed;top:calc(env(safe-area-inset-top,0px) + 5vh);left:0;right:0;margin:0;text-align:center;font-weight:200;font-size:clamp(1.7rem,4vw,3.1rem);letter-spacing:.42em;padding-left:.42em;background:linear-gradient(180deg,#fff 20%,#8ab4f8);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px rgba(100,140,255,.3);animation:in 2.4s ease both;pointer-events:none}
-        @keyframes in{from{opacity:0;letter-spacing:.9em}to{opacity:1;letter-spacing:.42em}}
         #comm{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:320px;height:min(560px,70vh);display:flex;flex-direction:column;border-radius:18px;background:rgba(6,10,24,.65);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(120,160,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.7),inset 0 0 40px rgba(60,100,200,.04)}
         #comm header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(120,160,255,.1);font-size:.8rem;letter-spacing:.12em}
         #comm header small{margin-left:auto;color:var(--mut);font-size:.68rem;letter-spacing:.04em}
@@ -27,7 +25,6 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<h1>Welcome</h1>
 <aside id="comm" aria-label="Funkverkehr"><header><span class="dot"></span><b>FUNKVERKEHR</b><small>Subraum 47,3 MHz</small></header><div id="feed" aria-live="polite"></div></aside>
 <script>
     (()=>{
@@ -143,7 +140,9 @@
             {id:'HELIOS-7',kind:'sat',a:1.8,e:.22,i:.8,N:2.4,w:1,M0:3,col:'#38bdf8'},
             {id:'VEGA-RELAIS',kind:'sat',a:1.35,e:.02,i:1.45,N:.3,w:0,M0:4.5,col:'#818cf8'},
             {id:'LUNA-STATION',kind:'sat',a:2,e:.06,i:.3,N:-.5,w:0,M0:2,col:'#94a3b8'},
-            {id:'ORION-STATION',kind:'station',a:1.18,e:0,i:.9,N:1.8,w:0,M0:5.2,col:'#38bdf8'}];
+            {id:'ORION-STATION',kind:'station',a:1.18,e:0,i:.9,N:1.8,w:0,M0:5.2,col:'#38bdf8'},
+            {id:'DER MOND',kind:'moon',a:4.5,e:.04,i:.25,N:1.2,w:.5,M0:1.5,pf:22.0,col:'#94a3b8'}
+        ];
         const TERRA={id:'TERRA-KONTROLLE',col:'#38bdf8'},byId={'TERRA-KONTROLLE':TERRA, 'ALLE': {id:'ALLE', col:'#cbd5e1'}};
         O.forEach(o=>byId[o.id]=o);
 
@@ -266,6 +265,7 @@
             for(const s of[-1,1]){const x=s>0?5:-19;g.fillStyle='#1e3a8a';g.fillRect(x,-3.2,14,6.4);g.strokeStyle='rgba(125,211,252,.6)';g.lineWidth=.5;g.beginPath();for(let i=1;i<4;i++){g.moveTo(x+i*3.5,-3.2);g.lineTo(x+i*3.5,3.2)}g.moveTo(x,0);g.lineTo(x+14,0);g.stroke()}
             g.fillStyle='#cbd5e1';g.beginPath();g.arc(0,-5,2.2,Math.PI,0);g.fill();
             g.fillStyle=Math.sin(ot*4+col.length)>.3?col:'#222';g.fillRect(-1,-1,2,2)}
+
         function station(ot){
             g.fillStyle='#64748b';g.fillRect(-40,-1.6,80,3.2);
             for(const s of[-1,1]){const x=s*34;g.fillStyle='#1e3a8a';g.fillRect(x-5,-20,10,18);g.fillRect(x-5,2,10,18);g.strokeStyle='rgba(125,211,252,.55)';g.lineWidth=.5;g.beginPath();for(let i=1;i<5;i++){g.moveTo(x-5,-20+i*3.6);g.lineTo(x+5,-20+i*3.6);g.moveTo(x-5,2+i*3.6);g.lineTo(x+5,2+i*3.6)}g.stroke()}
@@ -273,6 +273,7 @@
             for(let i=0;i<6;i++){const a=ot*.5+i*T/6,x=Math.cos(a)*22,y=Math.sin(a)*10;g.strokeStyle='#64748b';g.lineWidth=1.2;g.beginPath();g.moveTo(0,0);g.lineTo(x,y);g.stroke();g.fillStyle='rgba(125,211,252,.9)';g.fillRect(x-1,y-1,2,2)}
             const h=g.createRadialGradient(-1.5,-1.5,1,0,0,7);h.addColorStop(0,'#e2e8f0');h.addColorStop(1,'#475569');g.fillStyle=h;g.beginPath();g.arc(0,0,7,0,T);g.fill();
             g.fillStyle='#94a3b8';g.fillRect(-46,-2.4,6,4.8);g.fillRect(40,-2.4,6,4.8);g.fillStyle=Math.sin(ot*3)>0?'#38bdf8':'#0f172a';g.fillRect(45,-1,2,2)}
+
         function gateway(ot){g.rotate(-.35);
             for(const s of[-1,1])for(const x of[-17,3]){const y=s>0?8:-30;g.fillStyle='#1e3a8a';g.fillRect(x,y,14,22);g.strokeStyle='rgba(125,211,252,.55)';g.lineWidth=.5;g.beginPath();for(let i=1;i<4;i++){g.moveTo(x+i*3.5,y);g.lineTo(x+i*3.5,y+22)}for(let j=1;j<5;j++){g.moveTo(x,y+j*4.4);g.lineTo(x+14,y+j*4.4)}g.stroke()}
             g.fillStyle='#64748b';g.fillRect(-1.5,-30,3,60);
@@ -282,9 +283,135 @@
             g.fillStyle='rgba(125,211,252,.9)';for(let i=0;i<5;i++)g.fillRect(-10+i*5,-1,2,2);for(let i=0;i<3;i++){g.fillRect(-30+i*5,-1,2,2);g.fillRect(19+i*5,-1,2,2)}
             g.strokeStyle='#cbd5e1';g.lineWidth=1.2;g.beginPath();g.moveTo(37,0);g.lineTo(43,0);g.stroke();g.beginPath();g.arc(43,0,6,-1.1,1.1);g.stroke();
             g.fillStyle=Math.sin(ot*3)>0?'#38bdf8':'#090d16';g.fillRect(-1,-9,2,2)}
+
         function lunar(ot,r){moon(r*.8);g.save();g.translate(r*.95,-r*.55);g.scale(.62,.62);gateway(ot);g.restore()}
-        function moon(r){const gr=g.createRadialGradient(-r*.35,-r*.35,r*.1,0,0,r*1.05);gr.addColorStop(0,'#cbd5e1');gr.addColorStop(.6,'#64748b');gr.addColorStop(1,'#1e293b');g.fillStyle=gr;g.beginPath();g.arc(0,0,r,0,T);g.fill();
-            g.fillStyle='rgba(30,41,59,.4)';for(const[a,b,s]of[[.3,.1,.22],[-.25,.35,.16],[.1,-.4,.14],[-.45,-.1,.1]]){g.beginPath();g.arc(a*r,b*r,s*r,0,T);g.fill()}}
+
+// --- MOND-TEXTURE-GENERATOR (DEZENTE, WEICHE KRATER) ---
+        const MOON_PS = 512;
+        const moonCanvas = document.createElement('canvas');
+        moonCanvas.width = moonCanvas.height = MOON_PS;
+        const mCtx = moonCanvas.getContext('2d');
+
+        function generateMoonTexture() {
+            // 1. Basis-Regolith
+            mCtx.fillStyle = '#3a3d42';
+            mCtx.fillRect(0, 0, MOON_PS, MOON_PS);
+
+            const imgData = mCtx.getImageData(0, 0, MOON_PS, MOON_PS);
+            const data = imgData.data;
+            for(let y=0; y<MOON_PS; y++) {
+                for(let x=0; x<MOON_PS; x++) {
+                    let idx = (y * MOON_PS + x) * 4;
+                    let nx = x / MOON_PS, ny = y / MOON_PS;
+                    let n = Math.sin(nx * 30) * Math.cos(ny * 30) * 8 + Math.sin(nx * 80) * Math.cos(ny * 80) * 4;
+                    let baseVal = 72 + n + (Math.random() - 0.5) * 12;
+                    data[idx] = baseVal;
+                    data[idx+1] = baseVal + 2;
+                    data[idx+2] = baseVal + 4;
+                }
+            }
+            mCtx.putImageData(imgData, 0, 0);
+
+            // 2. Basalt-Meere (Maria) sanft einbetten
+            const maria = [
+                {x: 160, y: 180, rx: 110, ry: 90},
+                {x: 340, y: 200, rx: 90, ry: 80},
+                {x: 240, y: 320, rx: 100, ry: 70},
+                {x: 400, y: 380, rx: 70, ry: 60},
+                {x: 120, y: 360, rx: 60, ry: 50}
+            ];
+
+            for(let m of maria) {
+                let grad = mCtx.createRadialGradient(m.x, m.y, 10, m.x, m.y, m.rx);
+                grad.addColorStop(0, 'rgba(25, 27, 32, 0.85)');
+                grad.addColorStop(0.6, 'rgba(35, 38, 44, 0.5)');
+                grad.addColorStop(1, 'rgba(50, 53, 58, 0)');
+                mCtx.fillStyle = grad;
+                mCtx.beginPath();
+                mCtx.ellipse(m.x, m.y, m.rx, m.ry, Math.random(), 0, T);
+                mCtx.fill();
+            }
+
+            // 3. Krater sehr dezent und weich angedeutet
+            for(let i=0; i<300; i++) {
+                let cx = Math.random() * MOON_PS;
+                let cy = Math.random() * MOON_PS;
+                let r = Math.pow(Math.random(), 2) * 20 + 1.5;
+
+                // Krater-Außenwall (sehr feiner, transparenter Ring)
+                mCtx.strokeStyle = 'rgba(200, 208, 220, 0.22)';
+                mCtx.lineWidth = Math.max(0.8, r * 0.18);
+                mCtx.beginPath();
+                mCtx.arc(cx, cy, r, 0, T);
+                mCtx.stroke();
+
+                // Kraterinneres (nur leicht abgedunkelt)
+                mCtx.fillStyle = 'rgba(18, 20, 25, 0.4)';
+                mCtx.beginPath();
+                mCtx.arc(cx, cy, r * 0.75, 0, T);
+                mCtx.fill();
+
+                // Zentralberg sehr dezent
+                if(r > 9) {
+                    mCtx.fillStyle = 'rgba(220, 225, 235, 0.35)';
+                    mCtx.beginPath();
+                    mCtx.arc(cx + (Math.random()-0.5)*r*0.15, cy + (Math.random()-0.5)*r*0.15, r * 0.15, 0, T);
+                    mCtx.fill();
+                }
+            }
+
+            // 4. Sehr dezente Strahlensysteme
+            for(let i=0; i<8; i++) {
+                let rx = Math.random() * MOON_PS, ry = Math.random() * MOON_PS;
+                mCtx.strokeStyle = 'rgba(240, 245, 255, 0.05)';
+                mCtx.lineWidth = 1;
+                for(let a=0; a<T; a+=0.3) {
+                    let len = 30 + Math.random() * 60;
+                    mCtx.beginPath();
+                    mCtx.moveTo(rx, ry);
+                    mCtx.lineTo(rx + Math.cos(a)*len, ry + Math.sin(a)*len);
+                    mCtx.stroke();
+                }
+            }
+        }
+        generateMoonTexture();
+
+// --- MOND RENDERER ---
+        function drawRealisticMoon(P, ot, o) {
+            g.save();
+            g.translate(P.x, P.y);
+            const moonR = R * 0.27 * (.75 + .25 * P.z);
+
+            g.beginPath();
+            g.arc(0, 0, moonR, 0, T);
+            g.clip();
+
+            g.rotate(P.nu);
+            g.drawImage(moonCanvas, -moonR, -moonR, moonR * 2, moonR * 2);
+            g.restore();
+
+            // Terminator-Schattierung
+            g.save();
+            g.translate(P.x, P.y);
+
+            const sunAngle = Math.atan2(L[1], L[0]);
+            const moonAngle = Math.atan2(P.y - cy, P.x - cx);
+            const phaseOffset = sunAngle - moonAngle;
+
+            const grad = g.createLinearGradient(
+                -moonR * Math.cos(phaseOffset), -moonR * Math.sin(phaseOffset),
+                moonR * Math.cos(phaseOffset), moonR * Math.sin(phaseOffset)
+            );
+            grad.addColorStop(0, 'rgba(0, 0, 0, 0.99)');
+            grad.addColorStop(0.55, 'rgba(0, 0, 0, 0.4)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            g.fillStyle = grad;
+            g.beginPath();
+            g.arc(0, 0, moonR + 0.5, 0, T);
+            g.fill();
+            g.restore();
+        }
 
         const LS=[];
         const ARRIVALS=[];
@@ -380,7 +507,13 @@
         function ring(o,front,ot){g.beginPath();let pv=null;for(let k=0;k<=72;k++){const precession = (o.retro ? -0.015 : 0.01) * ot / (o.a * o.a * o.a);const p=proj(...orb(o,k/72*T, o.N + precession));if(pv&&((pv.d+p.d)/2>0)===!front){g.moveTo(pv.x,pv.y);g.lineTo(p.x,p.y)}pv=p}g.stroke()}
 
         let cur=null,sh=null,nextSh=3;
-        function drawObj(e,ot){const{o,P}=e;g.save();g.translate(P.x,P.y);
+        function drawObj(e,ot){const{o,P}=e;
+            if(o.kind==='moon'){
+                drawRealisticMoon(P, ot, o);
+                return;
+            }
+
+            g.save();g.translate(P.x,P.y);
             const k=R/200*(.65+.15*P.z);
             if(o.kind==='ship'){
                 const q=pos(o,ot+.03);
@@ -457,7 +590,6 @@
             drawLaunches(t, 'back');
             drawArrivals(t, 'back');
 
-// --- HIER BEHOBEN: Funkverbindungslinie wird VOR dem Planeten gezeichnet, damit der Planet sie verdeckt ---
             if(cur){
                 const age=t-cur.t0;
                 if(age<2.4){
