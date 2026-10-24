@@ -124,6 +124,16 @@
         .meta b{font-weight:600}
         .txt{color:#c8d4ef}
 
+        /* Funk Vollhöhe (Desktop) */
+        #expand-btn{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:#38bdf8;padding:2px 6px;border-radius:4px;font-size:.65rem;cursor:pointer;font-family:ui-monospace,Menlo,monospace;margin-right:6px}
+        #expand-btn:hover{background:rgba(56,189,248,.3)}
+        #comm.full{top:20px;width:min(440px,34vw)}
+        #comm.full #feed-container{flex:1;min-height:0;max-height:none}
+        #comm.full .msg{font-size:.85rem}
+        #comm.full .meta{font-size:.7rem}
+        #comm.collapsed{top:auto!important}
+        @media (max-width:820px){#expand-btn{display:none}}
+
         /* Mobile Optimierung */
         @media (max-width:820px){
             #comm{
@@ -155,6 +165,7 @@
         <span class="dot"></span>
         <b>FUNKVERKEHR</b>
         <small>Subraum 47,3 MHz</small>
+        <button id="expand-btn" aria-label="Auf volle Höhe aufklappen">[ ⤢ ]</button>
         <button id="toggle-btn" aria-label="Ein- und ausblenden">[ − ]</button>
     </header>
     <div id="feed-container">
@@ -174,6 +185,14 @@
     }
 
     toggleBtn.addEventListener('click', toggleComm);
+    const expBtn=document.getElementById('expand-btn');
+    expBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        commPanel.classList.remove('collapsed');toggleBtn.textContent='[ − ]';
+        const f=commPanel.classList.toggle('full');
+        expBtn.textContent=f?'[ ⤡ ]':'[ ⤢ ]';
+        const fd=document.getElementById('feed');fd.scrollTop=fd.scrollHeight});
+    matchMedia('(max-width:820px)').addEventListener('change',m=>{if(m.matches){commPanel.classList.remove('full');expBtn.textContent='[ ⤢ ]'}});
     commHeader.addEventListener('click', toggleComm);
 
     (()=>{
@@ -1111,7 +1130,7 @@ void main(){
             const ar=document.createElement('span');ar.textContent='→';
             const b=document.createElement('b');b.textContent=to;b.style.color=byId[to]?byId[to].col:'#cbd5e1';
             meta.append(t,a,ar,b);const x=document.createElement('div');x.className='txt';m.append(meta,x);feed.append(m);
-            while(feed.children.length>12)feed.firstChild.remove();
+            while(feed.children.length>(commPanel.classList.contains('full')?60:12))feed.firstChild.remove();
             type(x,txt);cur={f,to,t0:performance.now()/1000};act(it);
             setTimeout(say,txt.length*22+rnd(1400,2600))}
         setTimeout(say,1500);
