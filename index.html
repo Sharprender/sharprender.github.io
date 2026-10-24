@@ -1000,6 +1000,59 @@ void main(){
             }
         ];
 
+        /*EVENTS_PATCH*/
+        const PL=`Vulcan,Andoria,Tellar Prime,Risa,Betazed,Bajor,Cardassia Prime,Qo'noS,Romulus,Remus,Ferenginar,Trill,Denobula,Xindus,Talax,Rigel VII,Altair VI,Delta Vega,Ceti Alpha V,Organia,Rura Penthe,Khitomer,Praxis,Archanis IV,Berengaria VII,Beta Hydri II,Hanolin,Janus VI,Omicron Ceti III,Pollux IV,Regulus V,Talos IV,Tycho IV,Wolf 359,Zeta Gelis,Argelius II,Cait,Camus II,Capella IV,Cygnet XIV,Gamma Hydra,Gideon,Halcyon,Iotia,Kelva,Marcos XII,Nimbus III,Pyris VII,Rojan,Sarpeidon,Aldea,Ardana,Benzar,Bre'el IV,Chal,Deneva,Eminiar VII,Exo III,Galen IV,Ligon II,Mantiles,Mudd,Neural,Platonius,Psi 2000,Sigma Draconis VI,Taurus II,Vendikar,Zalkon,Ariannus,Bolarus IX,Cestus III,Tarsus IV,Epsilon Eridani,Procyon V,Tau Ceti IV,Alpha Centauri,Lyra Minor,Kestrel Reach,Aurelia,Brevik,Corvane,Dravos,Elysar,Fenwick,Galatea,Haven's Rest,Isodar,Jovian Ring,Kaltara,Lumeria,Meridian IX,Nyxar,Orpheus,Pelagos,Quillon,Ravenna,Solace,Thessaly,Umbriel,Valkyr,Westmark,Xenara,Ysolde,Zephyria,Ashgrove,Borealis,Cinder,Dunmere,Eventide`.split(','),
+            RC=`Menschen|||#38bdf8|fed;Vulkanier|||#fbbf24|vulcan;Klingonen|||#f87171|klingon;Romulaner|||#34d399|romulan;Cardassianer|Cardassianischer Kreuzer|Hideki,Keldon,Galor,Prakesh,Torr|#fb923c;Ferengi|Ferengi-Marauder|Goldpreis,Latinum-Traum,Kassenschlager,Profit,Dividende|#facc15;Andorianer|Andorianischer Kreuzer|Kumari,Thalaron,Shran,Weißeis,Ch'Thane|#7dd3fc;Bajoraner|Bajoranisches Schiff|Prophet,Kendra,Ashalla,Solbor,Lunar|#f0abfc;Tellariten|Tellaritischer Frachter|Grunz,Dickschädel,Hartkopf,Gegenrede,Disput|#a3e635;Breen|Breen-Dreadnought|Chot,Thot,Frost,Gletscher,Eisenfaust|#94a3b8;Gorn|Gorn-Kreuzer|Schuppenwacht,Echse,Kazar,Steinkralle,Sonnenhort|#4ade80;Orioner|Orion-Schmuggler|Schattenhandel,Smaragdkuss,Nachtmarkt,Seidenfaden,Jadeblüte|#2dd4bf;Trill|Trill-Forschungsschiff|Dax,Symbiose,Leben,Gefährte,Zhian'tara|#c4b5fd;Betazoiden|Betazoiden-Gesandtschaft|Empathie,Troi,Lwaxana,Gedankenfluss,Seelenklang|#f9a8d4;Denobulaner|Denobulaner-Transporter|Phlox,Heiterkeit,Zwillingsmond,Flora,Heilkunde|#fde68a;Xindi|Xindi-Aviar|Flügelschlag,Himmelsjäger,Aquatik,Insektoid,Arboreal|#86efac;Talaxianer|Talaxianischer Händler|Neelix,Rinax,Leolakon,Fußwärmer,Kochtopf|#fdba74;Kazon|Kazon-Raider|Ogla,Nistrim,Relora,Halik,Mostral|#ef4444;Hirogen|Hirogen-Jäger|Trophäe,Fährte,Beutegreifer,Ahnenjagd,Mondjäger|#d97706;Suliban|Suliban-Zellenschiff|Cabal,Gestaltwandler,Schleicher,Tarn,Zeitgänger|#a78bfa;Tholianer|Tholianisches Netzschiff|Kristallnetz,Spinne,Hitzewebe,Prisma,Gitter|#fca5a5;Jem'Hadar|Jem'Hadar-Kampfschiff|Kampfgeboren,Ketracel,Vorta-Wille,Dominion,Gründer-Tross|#a855f7`.split(';').map(s=>s.split('|')),
+            EV=[
+                // Kataklysmen
+                `H>A|🔥 KATAKLYSMUS: Instabiler Stern im {c}-System – Supernova in {n} Stunden erwartet. Evakuierung läuft!¦a>H|{a} übernimmt die Evakuierung von {k} Zivilisten.`,
+                `c>A|🚨 {c}: Asteroidenschwarm im Anflug, Einschlag in {n} Minuten. Planetare Schilde bei {x} %.¦b>c|{b} bildet einen Abfangkordon, Phaser auf Zerstörung der Brocken.`,
+                `H>A|🌀 WARNUNG: Gravitationswelle eines kollabierenden Schwarzen Lochs trifft Sektor {sec}. Kurs ändern!¦a>H|{a}: Trägheitsdämpfer am Limit, weichen aus.`,
+                `T>A|⚡ Plasmastürme über {c}. Warpverkehr im Sektor {sec} eingestellt.¦b>T|{b} wartet im Orbit von {c} auf Freigabe.`,
+                `c>H|☣️ SEUCHENALARM auf {c}: Unbekanntes Virus, {k} Infizierte. Bitte um medizinische Hilfe.¦a>c|{a}: Medizinschiff unterwegs, Impfstoff-Synthese beginnt in {n} Stunden.¦H>A|Quarantäne über {c} verhängt.`,
+                `H>A|⏳ ZEITANOMALIE nahe {c}: Chroniton-Pegel steigt, temporale Schilde aktivieren!¦b>T|{b} meldet Chronometer-Abweichung von {n} Sekunden.`,
+                `c>A|☀️ Sonneneruption der Klasse X bei {c}: Kommunikation gestört, Solarkollektoren abgeschaltet.¦T>c|Terra-Kontrolle leitet Notstrom über Relais um.`,
+                // Attacken
+                `c>H|🚨 ÜBERFALL auf {c}: Piratenflotte im Orbit, Schilde fallen!¦b>H|{b} eilt zur Verteidigung von {c}, Ankunft in {n} Minuten.`,
+                `H>A|🟩 BORG-ALARM: Kubus bei {c} gesichtet. Alle Schiffe Abfangformation!¦a>H|{a} bestätigt, Schilde auf Maximum.`,
+                `H>A|⚔️ Jem'Hadar-Kampfverband greift {c} an. Zivile Verluste: {n}.¦b>H|{b} hält die Linie, bitte um Verstärkung.`,
+                `c>A|🔴 Hirogen-Jäger kreisen über {c}. Kolonisten verschanzen sich.¦a>c|{a} schickt Sicherheitsteams, Trophäen werden beschlagnahmt.`,
+                `H>A|🚫 {b} blockiert den Orbit von {c} und fordert Zollgebühren.¦T>b|{b}, Blockade sofort beenden, sonst Warnschuss!`,
+                `c>H|💥 SABOTAGE auf {c}: Reaktor der Minenanlage manipuliert, {n} Vermisste.¦a>c|{a} sucht nach Überlebenden.`,
+                `b>H|Konvoi bei {c}: {b} meldet Überfall, {x} % der Ladung geraubt.¦H>A|Handelsrouten durch Sektor {sec} nur noch mit Geleit.`,
+                `H>A|🧬 BIOSCHIFF-ALARM: Spezies 8472 bricht in Sektor {sec} aus dem Fluidraum. Alle Schiffe meiden!¦a>H|{a} meldet organische Hülle, Phaser wirkungslos.`,
+                // Ankündigungen
+                `H>A|📣 Friedensvertrag zwischen Föderation und {rb} unterzeichnet.¦b>H|{b}: Die {rb} danken. Frieden für {n} Jahre vereinbart.`,
+                `H>A|📣 Handelsabkommen: Die {rb} erhalten Dilithium-Schürfrechte bei {c}.¦T>b|{b}, Frachtfreigabe für Sektor {sec} erteilt.`,
+                `H>A|📣 Sperrzone: Sektor {sec} ab sofort wegen Anomalie gesperrt.¦a>H|{a} bestätigt und ändert Kurs auf {c}.`,
+                `H>A|📣 Erstkontakt! Unbekannte Spezies bei {d} entdeckt. Diplomatenteam entsandt.¦a>H|{a} nähert sich vorsichtig, Universalübersetzer läuft.`,
+                `H>A|📣 Thronwechsel bei den {rb}: neuer Anführer vereidigt. Glückwünsche der Föderation.¦b>H|{b} dankt, Feierlichkeiten auf {c}.`,
+                `H>A|📣 Flottenmanöver in Sektor {sec}, {n} Schiffe beteiligt. Zivile Routen meiden.¦a>T|{a} meldet Übungsstart, Feuerfreigabe nur auf Zielsonden.`,
+                // Treffen
+                `^T>a|{a}, willkommen im Orbit. Die Delegation der {ra} wird erwartet.¦a>T|Danke, Terra-Kontrolle. Gipfeltreffen beginnt in {n} Minuten.`,
+                `a>b|{a} an {b}: Rendezvous bei {c} bestätigt. Fracht wird übergeben.¦b>a|{b} empfängt Datenpakete, danke für die Eskorte.`,
+                `H>A|🎭 Kulturfestival auf {c}: Musik und Küche der {rb} und {ra}. Alle Besatzungen eingeladen!¦c>A|Kolonisten von {c} begrüßen die Gäste mit {n} Banketten.`,
+                `H>b|Gefangenenaustausch bei {c}: {n} Personen kehren heim.¦b>H|{b} bestätigt die Übergabe, alle wohlauf.`,
+                `H>A|🪙 Handelsmesse auf {c}: Händler der {rb} bieten Waren aus {n} Systemen.¦b>T|{b} bittet um Landeerlaubnis für den Messestand.`,
+                // Berichte aus den Kolonien
+                `c>H|📋 Bericht {c}: Ernte {x} % des Solls, Wasserversorgung stabil, Bevölkerung {k}.¦H>c|Danke, {c}. Saatgutlieferung ist unterwegs.`,
+                `c>H|📋 {c}: Terraforming bei {x} %, Atmosphäre atembar ab Zyklus {n}.¦H>c|Forschungsteam wird verstärkt.`,
+                `d>H|⛏️ Bergbau auf {d}: neue Dilithiumader entdeckt, geschätzte Ausbeute {k} Tonnen.¦H>d|Förderlizenz genehmigt, {a} sichert den Abbau.`,
+                `c>T|📡 {c} empfängt rätselhaftes Signal auf Subraumkanal {n}, Ursprung unbekannt.¦T>c|Daten bitte an {a} weiterleiten, Analyse läuft.`
+            ],
+            pick=a=>a[Math.random()*a.length|0],F3=['vulcan','klingon','romulan'],
+            shipOf=r=>{if(r[4])return generateRandomName(r[4]);const id=r[1]+' '+pick(r[2].split(','));byId[id]=byId[id]||{id,col:r[3]};return id},
+            mkEv=s=>()=>{
+                const arr=s[0]==='^',txt=arr?s.slice(1):s,
+                    ra=arr?pick(RC.filter(r=>F3.includes(r[4]))):pick(RC),rb=pick(RC.slice(1).filter(r=>r!==ra)),
+                    V={ra:ra[0],rb:rb[0],a:shipOf(ra),b:shipOf(rb),c:pick(PL),n:2+Math.random()*45|0,sec:1+Math.random()*40|0,x:60+Math.random()*39|0,k:(2+Math.random()*90|0)*10};
+                do V.d=pick(PL);while(V.d===V.c);
+                if(arr)ARRIVALS.push({faction:ra[4],name:V.a,col:byId[V.a].col,angle:rnd(0,T),t0:performance.now()/1000});
+                for(const t of['c','d'])byId['Kolonie '+V[t]]=byId['Kolonie '+V[t]]||{id:'Kolonie '+V[t],col:'#c4b5fd'};
+                const id=t=>t==='H'?HQ:t==='T'?TK:t==='A'?'ALLE':(t==='c'||t==='d')?'Kolonie '+V[t]:V[t];
+                return txt.split('¦').map(l=>{const[h,m]=l.split('|'),[f,to]=h.split('>');return[id(f),id(to),m.replace(/\{(\w+)\}/g,(_,k)=>V[k])]})};
+        INCIDENT_TEMPLATES.push(...EV.map(mkEv));
+
         const TYPES=[{k:'shuttle',col:'#38bdf8',s:1.3,n:['Shuttle Galileo','Shuttle Curie','Shuttle Hopper']},{k:'freighter',col:'#f87171',s:1.1,n:['Frachter Meridian','Frachter Atlas','Frachter Nomad']},{k:'scout',col:'#2dd4bf',s:1.2,n:['Späher Kestrel','Späher Wisp','Späher Lynx']},{k:'cruiser',col:'#60a5fa',s:0.9,n:['USS Valiant','USS Kepler','USS Odyssey','USS Hypatia']}];
 
         function fill(s){return s.replace(/\{(\w+)\}/g,(_,k)=>({sec:1+Math.random()*12|0,sz:'2610.'+(100+Math.random()*265|0),p:90+Math.random()*9|0,ms:5+Math.random()*35|0,k:2+Math.random()*46|0,w:rnd(2,9).toFixed(1).replace('.',',')})[k])}
