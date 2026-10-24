@@ -134,6 +134,13 @@
         #comm.collapsed{top:auto!important}
         @media (max-width:820px){#expand-btn{display:none}}
 
+        /* Button-Fix */
+        #comm header{gap:8px;flex-wrap:nowrap;white-space:nowrap}
+        #comm header small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+        #toggle-btn,#expand-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-width:26px;height:22px;padding:0 5px;margin:0;line-height:1;box-sizing:border-box}
+        #expand-btn{margin-left:2px}
+        #expand-btn svg{display:block}
+
         /* Mobile Optimierung */
         @media (max-width:820px){
             #comm{
@@ -165,7 +172,7 @@
         <span class="dot"></span>
         <b>FUNKVERKEHR</b>
         <small>Subraum 47,3 MHz</small>
-        <button id="expand-btn" aria-label="Auf volle Höhe aufklappen">[ ⤢ ]</button>
+        <button id="expand-btn" aria-label="Auf volle Höhe aufklappen"></button>
         <button id="toggle-btn" aria-label="Ein- und ausblenden">[ − ]</button>
     </header>
     <div id="feed-container">
@@ -185,14 +192,16 @@
     }
 
     toggleBtn.addEventListener('click', toggleComm);
-    const expBtn=document.getElementById('expand-btn');
+    const ICO_L='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 5V1h4M11 7v4H7M1 1l4 4M11 11L7 7"/></svg>',
+        ICO_S='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 1v4H1M7 11V7h4M5 5L1 1M7 7l4 4"/></svg>';
+    const expBtn=document.getElementById('expand-btn');expBtn.innerHTML=ICO_L;
     expBtn.addEventListener('click',e=>{
         e.stopPropagation();
-        commPanel.classList.remove('collapsed');toggleBtn.textContent='[ − ]';
-        const f=commPanel.classList.toggle('full');
-        expBtn.textContent=f?'[ ⤡ ]':'[ ⤢ ]';
+        const wasC=commPanel.classList.contains('collapsed');commPanel.classList.remove('collapsed');toggleBtn.textContent='[ − ]';
+        const f=wasC?(commPanel.classList.add('full'),true):commPanel.classList.toggle('full');
+        expBtn.innerHTML=f?ICO_S:ICO_L;
         const fd=document.getElementById('feed');fd.scrollTop=fd.scrollHeight});
-    matchMedia('(max-width:820px)').addEventListener('change',m=>{if(m.matches){commPanel.classList.remove('full');expBtn.textContent='[ ⤢ ]'}});
+    matchMedia('(max-width:820px)').addEventListener('change',m=>{if(m.matches){commPanel.classList.remove('full');expBtn.innerHTML=ICO_L}});
     commHeader.addEventListener('click', toggleComm);
 
     (()=>{
