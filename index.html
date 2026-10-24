@@ -9,24 +9,135 @@
         :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#01040a;--fg:#d8e4fc;--mut:#6f82a8}
         html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
         #c{position:fixed;inset:0;width:100%;height:100%;display:block}
-        #comm{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:320px;height:min(560px,70vh);display:flex;flex-direction:column;border-radius:18px;background:rgba(6,10,24,.65);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(120,160,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.7),inset 0 0 40px rgba(60,100,200,.04)}
-        #comm header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(120,160,255,.1);font-size:.8rem;letter-spacing:.12em}
-        #comm header small{margin-left:auto;color:var(--mut);font-size:.68rem;letter-spacing:.04em}
-        .dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 10px #34d399;animation:p 1.6s infinite}
+
+        /* Funk-Panel (Standard Desktop: Unten rechts verankert) */
+        #comm{
+            position:fixed;
+            right:20px;
+            bottom:20px;
+            width:340px;
+            display:flex;
+            flex-direction:column;
+            border-radius:18px;
+            background:rgba(6,10,24,.8);
+            -webkit-backdrop-filter:blur(14px);
+            backdrop-filter:blur(14px);
+            border:1px solid rgba(120,160,255,.16);
+            box-shadow:0 20px 60px rgba(0,0,0,.7),inset 0 0 40px rgba(60,100,200,.04);
+            z-index:10;
+            transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #comm header{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:12px 16px;
+            border-bottom:1px solid rgba(120,160,255,.1);
+            font-size:.75rem;
+            letter-spacing:.12em;
+            cursor:pointer;
+            user-select:none;
+        }
+        #comm header:hover{background:rgba(120,160,255,.05)}
+        #comm header small{margin-left:auto;color:var(--mut);font-size:.62rem;letter-spacing:.04em}
+
+        #toggle-btn{
+            background:rgba(56,189,248,.15);
+            border:1px solid rgba(56,189,248,.3);
+            color:#38bdf8;
+            padding:2px 6px;
+            border-radius:4px;
+            font-size:.65rem;
+            cursor:pointer;
+            font-family:ui-monospace,Menlo,monospace;
+        }
+        #toggle-btn:hover{background:rgba(56,189,248,.3)}
+
+        .dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;animation:p 1.6s infinite}
         @keyframes p{50%{opacity:.25}}
-        #feed{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:14px 16px;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 24%);mask-image:linear-gradient(to bottom,transparent,#000 24%)}
-        .msg{font-size:.8rem;line-height:1.45;animation:m .5s ease both}
+
+        #feed-container{
+            min-height: 200px;
+            max-height: min(320px, 40vh);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, min-height 0.3s ease;
+        }
+        #comm.collapsed #feed-container{
+            min-height: 0;
+            max-height: 0;
+            opacity: 0;
+        }
+
+        #feed{
+            flex:1;
+            overflow-y:auto;
+            display:flex;
+            flex-direction:column;
+            justify-content:flex-end;
+            gap:10px;
+            padding:14px 16px;
+            -webkit-mask-image:linear-gradient(to bottom,transparent,#000 16%);
+            mask-image:linear-gradient(to bottom,transparent,#000 16%);
+        }
+        .msg{font-size:.75rem;line-height:1.4;animation:m .5s ease both}
         @keyframes m{from{opacity:0;transform:translateY(8px)}}
-        .meta{display:flex;gap:6px;flex-wrap:wrap;font-size:.68rem;color:var(--mut);margin-bottom:2px}
+        .meta{display:flex;gap:5px;flex-wrap:wrap;font-size:.62rem;color:var(--mut);margin-bottom:2px}
         .meta b{font-weight:600}
         .txt{color:#c8d4ef}
-        @media (max-width:820px){#comm{top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:12px;right:12px;width:auto;height:30vh;transform:none}}
+
+        /* Mobile Optimierung: Bei wenig Platz unten bündig und mit Sicherheitsabstand */
+        @media (max-width:820px){
+            #comm{
+                left:10px;
+                right:10px;
+                bottom:0;
+                width:auto;
+                border-radius:18px 18px 0 0;
+                border-left:none;
+                border-right:none;
+                border-bottom:none;
+                background:rgba(6,10,24,.92);
+            }
+            #comm header{padding:10px 14px;font-size:.7rem}
+            #feed-container{
+                min-height: 140px;
+                max-height: 22vh;
+            }
+            #feed{padding:10px 14px;gap:8px}
+            .msg{font-size:.7rem}
+        }
     </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<aside id="comm" aria-label="Funkverkehr"><header><span class="dot"></span><b>FUNKVERKEHR</b><small>Subraum 47,3 MHz</small></header><div id="feed" aria-live="polite"></div></aside>
+<aside id="comm" aria-label="Funkverkehr">
+    <header id="comm-header">
+        <span class="dot"></span>
+        <b>FUNKVERKEHR</b>
+        <small>Subraum 47,3 MHz</small>
+        <button id="toggle-btn" aria-label="Ein- und ausblenden">[ − ]</button>
+    </header>
+    <div id="feed-container">
+        <div id="feed" aria-live="polite"></div>
+    </div>
+</aside>
+
 <script>
+    const commPanel = document.getElementById('comm');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const commHeader = document.getElementById('comm-header');
+
+    function toggleComm(e) {
+        e.stopPropagation();
+        commPanel.classList.toggle('collapsed');
+        toggleBtn.textContent = commPanel.classList.contains('collapsed') ? '[ + ]' : '[ − ]';
+    }
+
+    toggleBtn.addEventListener('click', toggleComm);
+    commHeader.addEventListener('click', toggleComm);
+
     (()=>{
         const cv=document.getElementById('c'),g=cv.getContext('2d');
         let W,H,D,R,cx,cy,nebula,mx=0,tmx=0;
@@ -43,7 +154,23 @@
             c:STAR_COLORS[Math.floor(Math.random()*STAR_COLORS.length)]
         }));
 
-        function resize(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;R=Math.min(W,H)*.16;cx=W/2;cy=H/2;buildNebula()}
+        function resize(){
+            D=Math.min(devicePixelRatio||1,2);
+            W=innerWidth;
+            H=innerHeight;
+            cv.width=W*D;
+            cv.height=H*D;
+            R=Math.min(W,H)*.16;
+            cx=W/2;
+
+            if(W <= 820) {
+                cy = H * 0.38;
+            } else {
+                cy = H / 2;
+            }
+
+            buildNebula();
+        }
 
         function buildNebula(){
             nebula=document.createElement('canvas');
@@ -286,14 +413,13 @@
 
         function lunar(ot,r){moon(r*.8);g.save();g.translate(r*.95,-r*.55);g.scale(.62,.62);gateway(ot);g.restore()}
 
-// --- MOND-TEXTURE-GENERATOR (DEZENTE, WEICHE KRATER) ---
+// --- MOND-TEXTURE-GENERATOR ---
         const MOON_PS = 512;
         const moonCanvas = document.createElement('canvas');
         moonCanvas.width = moonCanvas.height = MOON_PS;
         const mCtx = moonCanvas.getContext('2d');
 
         function generateMoonTexture() {
-            // 1. Basis-Regolith
             mCtx.fillStyle = '#3a3d42';
             mCtx.fillRect(0, 0, MOON_PS, MOON_PS);
 
@@ -312,7 +438,6 @@
             }
             mCtx.putImageData(imgData, 0, 0);
 
-            // 2. Basalt-Meere (Maria) sanft einbetten
             const maria = [
                 {x: 160, y: 180, rx: 110, ry: 90},
                 {x: 340, y: 200, rx: 90, ry: 80},
@@ -332,26 +457,22 @@
                 mCtx.fill();
             }
 
-            // 3. Krater sehr dezent und weich angedeutet
             for(let i=0; i<300; i++) {
                 let cx = Math.random() * MOON_PS;
                 let cy = Math.random() * MOON_PS;
                 let r = Math.pow(Math.random(), 2) * 20 + 1.5;
 
-                // Krater-Außenwall (sehr feiner, transparenter Ring)
                 mCtx.strokeStyle = 'rgba(200, 208, 220, 0.22)';
                 mCtx.lineWidth = Math.max(0.8, r * 0.18);
                 mCtx.beginPath();
                 mCtx.arc(cx, cy, r, 0, T);
                 mCtx.stroke();
 
-                // Kraterinneres (nur leicht abgedunkelt)
                 mCtx.fillStyle = 'rgba(18, 20, 25, 0.4)';
                 mCtx.beginPath();
                 mCtx.arc(cx, cy, r * 0.75, 0, T);
                 mCtx.fill();
 
-                // Zentralberg sehr dezent
                 if(r > 9) {
                     mCtx.fillStyle = 'rgba(220, 225, 235, 0.35)';
                     mCtx.beginPath();
@@ -360,7 +481,6 @@
                 }
             }
 
-            // 4. Sehr dezente Strahlensysteme
             for(let i=0; i<8; i++) {
                 let rx = Math.random() * MOON_PS, ry = Math.random() * MOON_PS;
                 mCtx.strokeStyle = 'rgba(240, 245, 255, 0.05)';
@@ -376,7 +496,6 @@
         }
         generateMoonTexture();
 
-// --- MOND RENDERER ---
         function drawRealisticMoon(P, ot, o) {
             g.save();
             g.translate(P.x, P.y);
@@ -390,7 +509,6 @@
             g.drawImage(moonCanvas, -moonR, -moonR, moonR * 2, moonR * 2);
             g.restore();
 
-            // Terminator-Schattierung
             g.save();
             g.translate(P.x, P.y);
 
@@ -702,6 +820,7 @@
             ['AURORA-1',TK,'Telemetrie stabil. Solarpaneele zu 98 % ausgerichtet.'],
             [TK,'AURORA-1','Verstanden, Aurora. Datenübertragung läuft.']];
 
+// ERWEITERTE UND ABWECHSLUNGSREICHERE EREIGNIS-VORLAGEN
         const INCIDENT_TEMPLATES = [
             () => {
                 const shipA = generateRandomName('fed');
@@ -747,6 +866,36 @@
                     [HQ, 'ALLE', `📡 SUBRAUM-NOTRUF: ${ship} meldet schwere Quantenphasen-Verzerrung im Plasmastrom. Hilfe angefordert!`],
                     [SH, HQ, `Sharprender empfängt Notruf von ${ship}. Traktorstrahl und Reparatur-Teams aktiviert.`]
                 ];
+            },
+            // NEUE EREIGNISSE FÜR MEHR ABWECHSLUNG:
+            () => {
+                const ship = generateRandomName('fed');
+                const planetName = ['Vulcan', 'Andoria', 'Tellar', 'Risa', 'Babel'][Math.random() * 5 | 0];
+                return [
+                    [ship, TK, `${ship} erbittet Erlaubnis zur Durchführung atmosphärischer Sensortests über ${planetName}.`],
+                    [TK, ship, `Erlaubnis erteilt, ${ship}. Meiden Sie den zivilen Luftkorridor Delta.`]
+                ];
+            },
+            () => {
+                const freighter = generateRandomName('fed');
+                return [
+                    [freighter, TK, `${freighter} meldet Laderaum-Integrität bei 100%. Transport von medizinischen Synthetika für Aussenposten gesichert.`],
+                    [TK, freighter, `Bestätigt. Kurskorrektur um 0,5 Grad zur Vermeidung von Weltraumschrott empfohlen.`]
+                ];
+            },
+            () => {
+                const ship = generateRandomName('klingon');
+                return [
+                    [ship, HQ, `${ship} fordert offizielle Handelsserie bezüglich dilithiumhaltiger Asteroiden im neutralen Sektor an.`],
+                    [HQ, ship, `Anfrage an das Ministerium für interstellaren Handel weitergeleitet.`]
+                ];
+            },
+            () => {
+                const scienceShip = generateRandomName('fed');
+                return [
+                    [scienceShip, TK, `${scienceShip} registriert ungewöhnliche Chroniton-Partikel-Spuren im Orbit.`],
+                    [TK, scienceShip, `Vorsicht geboten. Aktivieren Sie die temporalen Abschirmungen.`]
+                ];
             }
         ];
 
@@ -774,7 +923,7 @@
             });
         }
 
-        function edge(a){const dx=Math.cos(a),dy=Math.sin(a),rl=W>820?W-360:W-20,bl=W>820?H-20:H*.66,tx=dx>.001?(rl-cx)/dx:dx<-.001?(20-cx)/dx:1e9,ty=dy>.001?(bl-cy)/dy:dy<-.001?(70-cy)/dy:1e9;return Math.min(tx,ty)}
+        function edge(a){const dx=Math.cos(a),dy=Math.sin(a),rl=W>820?W-380:W,bl=W>820?H-20:H*.7,tx=dx>.001?(rl-cx)/dx:dx<-.001?(20-cx)/dx:1e9,ty=dy>.001?(bl-cy)/dy:dy<-.001?(70-cy)/dy:1e9;return Math.min(tx,ty)}
         function aim(L){for(let i=0;i<30;i++){L.a=rnd(0,T);L.cv=Math.random()<.5?1:-1;const e=Math.min(edge(L.a),edge(L.a+L.cv*.15),edge(L.a+L.cv*.3));if(e>R*2.3){L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55);return}}L.a=0;L.cv=1;const e=Math.max(R*2,edge(0));L.rW=e*.88;L.rA=Math.max(R*1.4,e*.55)}
 
         function act(it){
