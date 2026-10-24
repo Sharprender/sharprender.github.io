@@ -127,12 +127,12 @@
         /* Funk Vollhöhe (Desktop) */
         #expand-btn{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:#38bdf8;padding:2px 6px;border-radius:4px;font-size:.65rem;cursor:pointer;font-family:ui-monospace,Menlo,monospace;margin-right:6px}
         #expand-btn:hover{background:rgba(56,189,248,.3)}
-        #comm.full{top:20px;width:min(440px,34vw)}
-        #comm.full #feed-container{flex:1;min-height:0;max-height:none}
+        @media (min-width:821px){#comm.full{top:20px;width:min(440px,34vw)}}
+        @media (min-width:821px){#comm.full #feed-container{flex:1;min-height:0;max-height:none}}
         #comm.full .msg{font-size:.85rem}
         #comm.full .meta{font-size:.7rem}
         #comm.collapsed{top:auto!important}
-        @media (max-width:820px){#expand-btn{display:none}}
+        /*MOBIL_FIX*/
 
         /* Button-Fix */
         #comm header{gap:8px;flex-wrap:nowrap;white-space:nowrap}
@@ -162,6 +162,22 @@
             #feed{padding:10px 14px;gap:8px}
             .msg{font-size:.7rem}
         }
+        @media (max-width:820px){
+            #comm{padding-bottom:env(safe-area-inset-bottom,0px)}
+            #comm.full{top:auto!important;width:auto!important}
+            #feed-container{max-height:22vh;max-height:22dvh}
+            #comm.full #feed-container{min-height:46vh;min-height:46dvh;max-height:62vh;max-height:62dvh}
+            #comm.full .msg{font-size:.78rem}
+            #comm.full .meta{font-size:.62rem}
+        }
+        @media (max-width:820px) and (max-height:480px){
+            #feed-container{min-height:90px;max-height:34vh}
+            #comm.full #feed-container{min-height:50vh;max-height:70vh}
+        }
+
+        /*COLLAPSE_FIX*/
+        #comm.collapsed #feed-container{flex:none!important;min-height:0!important;max-height:0!important;opacity:0!important;pointer-events:none}
+        #comm.collapsed{top:auto!important;height:auto!important}
     </style>
 </head>
 <body>
